@@ -11,11 +11,11 @@ app.use(express.json());
 app.use(express.static("public"));
 
 const cone = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  database: 'teste1',
-  password: '',
-  port: '3306'
+  host: 'regentte-cauadesplanches5-2f80.j.aivencloud.com',
+  user: 'avnadmin',
+  database: 'defaultdb',
+  password: 'AVNS_7ISC-ZZEwf_msIR4-YX',
+  port: '20358'
 });
 
 cone.connect((err) => {
@@ -28,7 +28,7 @@ cone.connect((err) => {
 
 function verificarEmail(email) {
   return new Promise((resolve, reject) => {
-    cone.execute('SELECT * FROM login1 WHERE email = ?', [email], (err, results) => {
+    cone.execute('SELECT * FROM Usuarios WHERE email = ?', [email], (err, results) => {
       if (err) {
         reject(err);
         return;
@@ -42,7 +42,7 @@ function verificarEmail(email) {
 // Função para inserir usuário usando Promise
 function inserirUsuario(nome, email, senha) {
   return new Promise((resolve, reject) => {
-    cone.execute('INSERT INTO login1 (nome, email, senha) VALUES (?,?,?)',
+    cone.execute('INSERT INTO Usuarios (nome, email, senha) VALUES (?,?,?)',
       [nome, email, senha], (err, results) => {
         if (err) {
           reject(err);
