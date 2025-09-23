@@ -138,7 +138,7 @@ app.post('/api/login', async (req, res) => {
 
 function verificarUsuario(email, senha) {
   return new Promise((resolve, reject) => {
-    cone.execute("SELECT * FROM login1 WHERE email = ? AND senha = ?",
+    cone.execute("SELECT * FROM Usuarios WHERE email = ? AND senha = ?",
       [email, senha], (err, results) => {
         if (err) {
           console.log("Deu erro 3", err);
