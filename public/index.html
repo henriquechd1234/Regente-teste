@@ -140,10 +140,10 @@
                     document.getElementById('userName').textContent = data.user.nome;
                     document.getElementById('userEmail').textContent = data.user.email;
                 } else {
-                    window.location.href = '/login';
+                    console.log("Usuario não logado");
                 }
             } catch (error) {
-                window.location.href = '/login';
+                console.log("Deu erro na parte de check de login");
             }
         }
 
