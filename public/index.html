@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colégio Regente Feijó</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<style>
+  .hero-section {
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    position: relative;
+  }
+  
+  /* Overlay para melhor legibilidade do texto */
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+  }
+</style>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Header -->
+  <header class="fixed w-full bg-white shadow-md z-50">
+    <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+      <div class="flex items-center">
+        <img src="CERF.jpg" alt="Logo Colégio Regente Feijó" 
+             class="h-10 sm:h-12 md:h-14 lg:h-16 w-auto">
+        <span class="ml-2 sm:ml-3 text-lg sm:text-xl md:text-2xl font-bold text-indigo-900 hidden md:block">
+          Colégio Regente Feijó
+        </span>
+      </div>
+
+      <!-- Desktop Menu -->
+      <nav class="hidden md:flex space-x-6 lg:space-x-8">
+        <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
+           class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+        <a href="#historia" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+        <a href="#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+        <a href="#noticias" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+        <a href="#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
+      </nav>
+
+      <!-- Ícones -->
+      <div class="flex items-center">
+        <a href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
+          <i data-feather="user" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+        </a>
+        <button class="md:hidden focus:outline-none" id="mobile-menu-button">
+          <i data-feather="menu" class="w-6 h-6 text-indigo-900"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu (inicialmente escondido) -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
+      <nav class="flex flex-col space-y-4 px-6 py-4 text-center">
+        <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
+           class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+        <a href="#historia" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+        <a href="#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+        <a href="#noticias" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+        <a href="#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section CORRIGIDA -->
+  <section class="hero-section pt-28 sm:pt-32 pb-16 sm:pb-20 relative overflow-hidden"
+           style="background-image: url('fotos/regenteescola.jpg');">
+    <div class="hero-content container mx-auto px-4 text-center relative z-10">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
+        Colégio Regente Feijó
+      </h1>
+      <p class="text-base sm:text-lg md:text-xl lg:text-2xl text-indigo-100 mb-6 sm:mb-10 max-w-3xl mx-auto">
+        Excelência em educação técnica e formação de cidadãos para o futuro
+      </p>
+      <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow-lg transition-all transform hover:scale-105">
+        Conheça nossos cursos
+      </button>
+    </div>
+  </section>
+
+  <!-- Cursos -->
+  <section id="cursos" class="py-12 sm:py-16 bg-gray-100">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="text-2xl sm:text-3xl font-bold text-indigo-900 mb-8 sm:mb-12">Nossos Cursos</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-indigo-900 text-white p-6 rounded-xl shadow-md">
+          <i data-feather="briefcase" class="w-10 h-10 mb-3"></i>
+          <h3 class="text-lg font-bold">Administração</h3>
+        </div>
+        <div class="bg-indigo-900 text-white p-6 rounded-xl shadow-md">
+          <i data-feather="activity" class="w-10 h-10 mb-3"></i>
+          <h3 class="text-lg font-bold">Agronegócio</h3>
+        </div>
+        <div class="bg-indigo-900 text-white p-6 rounded-xl shadow-md">
+          <i data-feather="code" class="w-10 h-10 mb-3"></i>
+          <h3 class="text-lg font-bold">Desenvolvimento de Sistemas</h3>
+        </div>
+        <div class="bg-indigo-900 text-white p-6 rounded-xl shadow-md">
+          <i data-feather="home" class="w-10 h-10 mb-3"></i>
+          <h3 class="text-lg font-bold">Hospedagem</h3>
+        </div>
+        <div class="bg-indigo-900 text-white p-6 rounded-xl shadow-md">
+          <i data-feather="bar-chart-2" class="w-10 h-10 mb-3"></i>
+          <h3 class="text-lg font-bold">Marketing</h3>
+        </div>
+        <div class="bg-indigo-900 text-white p-6 rounded-xl shadow-md">
+          <i data-feather="clipboard" class="w-10 h-10 mb-3"></i>
+          <h3 class="text-lg font-bold">Planejamento e Controle da Produção</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contato -->
+  <section id="contato" class="py-12 sm:py-16 bg-red-600 text-white text-center">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-4">Entre em contato conosco</h2>
+    <p class="max-w-xl mx-auto text-sm sm:text-base">
+      Tem dúvidas ou quer saber mais sobre nossos cursos? Nossa equipe está pronta para ajudar.
+    </p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-indigo-900 text-white py-6 sm:py-8 text-center">
+    <p class="text-sm sm:text-base">&copy; 2025 Colégio Regente Feijó. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    feather.replace();
+
+    // Menu Mobile Toggle
+    const btn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
+
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>
