@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>História - Colégio Regente Feijó</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <style>
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f46e5; /* indigo-600 */
+            z-index: 1;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: #4f46e5; /* indigo-600 */
+        }
+        @media (max-width: 768px) {
+            .timeline-item::before {
+                left: 0;
+            }
+            .timeline-line {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white font-sans">
+    <!-- Header com mesmo estilo das páginas anteriores -->
+    <header class="fixed w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+          <div class="flex items-center">
+            <img src="CERF.jpg" alt="Logo Colégio Regente Feijó" 
+                 class="h-10 sm:h-12 md:h-14 lg:h-16 w-auto">
+            <span class="ml-2 sm:ml-3 text-lg sm:text-xl md:text-2xl font-bold text-indigo-900 hidden md:block">
+              Colégio Regente Feijó
+            </span>
+          </div>
+    
+          <!-- Desktop Menu -->
+          <nav class="hidden md:flex space-x-6 lg:space-x-8">
+            <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
+               class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+            <a href="index.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+            <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+            <a href="index.html#noticias" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+            <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
+          </nav>
+    
+          <!-- Ícones -->
+          <div class="flex items-center">
+            <a href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
+              <i data-feather="user" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </a>
+            <button class="md:hidden focus:outline-none" id="mobile-menu-button">
+              <i data-feather="menu" class="w-6 h-6 text-indigo-900"></i>
+            </button>
+          </div>
+        </div>
+    
+        <!-- Mobile Menu (inicialmente escondido) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
+          <nav class="flex flex-col space-y-4 px-6 py-4 text-center">
+            <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
+               class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+            <a href="index.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+            <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+            <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+            <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
+          </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12 pt-28">
+        <h1 class="text-4xl font-bold text-center text-indigo-900 mb-12">Nossa História</h1>
+        
+        <div class="relative max-w-4xl mx-auto">
+            <!-- Timeline line -->
+            <div class="timeline-line"></div>
+            
+            <!-- Timeline items -->
+            <div class="space-y-16">
+                <!-- Item 1 -->
+                <div class="relative timeline-item pl-8 md:pl-0" data-aos="fade-up">
+                    <div class="md:w-1/2 md:ml-auto md:pl-12">
+                        <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-white text-indigo-900 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                                    <i data-feather="book"></i>
+                                </div>
+                                <h3 class="text-xl font-bold">Início dos anos 1920</h3>
+                            </div>
+                            <p class="mb-4">Reforma educacional no Paraná sob governo de Caetano Munhoz da Rocha; valorização da Escola Normal, voltada para formar professores; inspetor geral do ensino = Cézar Prietro Martinez oficializa em 1921 projeto para criação de Escolas Normais em Paranaguá e Ponta Grossa.</p>
+                            <p>Criação de bases para ensino estatal formal de professores; planejamento institucional para a especialização pedagógica.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="relative timeline-item pl-8 md:pl-0" data-aos="fade-up">
+                    <div class="md:w-1/2 md:pr-12">
+                        <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-white text-indigo-900 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                                    <i data-feather="home"></i>
+                                </div>
+                                <h3 class="text-xl font-bold">1922‑1924</h3>
+                            </div>
+                            <p class="mb-4">Início da construção do prédio na Rua do Rosário, nº 194, para a Escola Normal de Ponta Grossa. Obra completada em fevereiro de 1924.</p>
+                            <p>Estabelecimento de uma sede própria e imponente, reconhecida pela sua arquitetura; início das atividades da Escola Normal na estrutura física que até hoje abriga o colégio.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="relative timeline-item pl-8 md:pl-0" data-aos="fade-up">
+                    <div class="md:w-1/2 md:ml-auto md:pl-12">
+                        <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-white text-indigo-900 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                                    <i data-feather="award"></i>
+                                </div>
+                                <h3 class="text-xl font-bold">1927</h3>
+                            </div>
+                            <p class="mb-4">Autorização para funcionar como instituição de ensino em 21 de fevereiro; nome oficializado (Regente Feijó) em homenagem a Diogo Antônio Feijó.</p>
+                            <p>Formalização legal da instituição; ganho de identidade própria com nome; início de operação sob esse nome. Também em 1927 a Prefeitura adquire outro prédio (Rua Dr. Colares, esquina com Rua Augusto Ribas) para implantar o Ginásio Regente Feijó.</p>
+                            <p>Indica expansão das modalidades de ensino (do Normal para também oferecer Ginásio), o que mostra crescimento da demanda.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="relative timeline-item pl-8 md:pl-0" data-aos="fade-up">
+                    <div class="md:w-1/2 md:pr-12">
+                        <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-white text-indigo-900 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                                    <i data-feather="users"></i>
+                                </div>
+                                <h3 class="text-xl font-bold">1938‑Décadas seguintes</h3>
+                            </div>
+                            <p class="mb-4">Fusão do Ginásio Regente Feijó com a Escola Normal pelo Decreto n° 6.150 de 10/01/1938; porém, até 1939 continuaram as atividades em prédios separados; em 1939 tudo passou a funcionar no prédio da Rua do Rosário (sede original da Normal).</p>
+                            <p>Unificação das atividades escolares sob uma única instituição e edifício ‒ simplificação administrativa e física; consolidação da escola como Colégio Estadual Regente Feijó.</p>
+                            <p>O colégio torna-se referência no ensino público em Ponta Grossa e região, não apenas como espaço físico histórico, mas como instituição educacional de peso.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="relative timeline-item pl-8 md:pl-0" data-aos="fade-up">
+                    <div class="md:w-1/2 md:ml-auto md:pl-12">
+                        <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-white text-indigo-900 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                                    <i data-feather="cpu"></i>
+                                </div>
+                                <h3 class="text-xl font-bold">1990/início dos anos 2000</h3>
+                            </div>
+                            <p class="mb-4">Tombamento do prédio como Patrimônio Histórico e Artístico do Paraná e Revitalização completa do edifício, restauro para recuperar as características originais; reinaugurado em 2002.</p>
+                            <p>Reconhecimento oficial de seu valor arquitetônico e histórico; obriga conservação, preservação das características originais do edifício e Modernização da infraestrutura mantendo o patrimônio historicista; melhora das condições de ensino e permanência.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 6 -->
+                <div class="relative timeline-item pl-8 md:pl-0" data-aos="fade-up">
+                    <div class="md:w-1/2 md:pr-12">
+                        <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-lg">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-white text-indigo-900 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                                    <i data-feather="star"></i>
+                                </div>
+                                <h3 class="text-xl font-bold">Atualidade</h3>
+                            </div>
+                            <p class="mb-4">Oferece Ensino Médio e Técnico (integrado e subsequente); cerca de 25 salas de aula; capacidade estimada para cerca de 2.700 alunos (dados de referência de 2008) embora o número de alunos nos últimos anos possa variar.</p>
+                            <p>Transformou‐se de Escola Normal + Ginásio para um estabelecimento completo de Ensino Médio com perfil técnico, atuando nas necessidades educacionais modernas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Call to Action -->
+    <section class="bg-red-600 py-12">
+        <div class="container mx-auto px-6 text-center text-white">
+            <h2 class="text-3xl font-bold mb-4">Faça parte da nossa história</h2>
+            <p class="text-xl mb-8">Matricule-se agora e comece sua jornada de aprendizado conosco.</p>
+            <button class="bg-white text-red-600 font-bold px-8 py-3 rounded-lg hover:bg-gray-100 transition duration-300">
+                Inscreva-se
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-900 text-white py-6 sm:py-8 text-center">
+        <p class="text-sm sm:text-base">&copy; 2025 Colégio Regente Feijó. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        feather.replace();
+        AOS.init();
+
+        // Menu Mobile Toggle (mesmo código das páginas anteriores)
+        const btn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
