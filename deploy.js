@@ -23,28 +23,22 @@
   app.use(express.json({limit: '10mb'}));
   app.use(express.static("public"));
 
-  /*
+  
   const cone = mysql.createConnection({
     host: 'regentte-cauadesplanches5-2f80.j.aivencloud.com',
     user: 'avnadmin',
     database: 'defaultdb',
     password: 'AVNS_7ISC-ZZEwf_msIR4-YX',
     port: '20358'
-  });*/
-
-  const cone = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'testes',
-    password: '',
-    port: '3306'
   })
+
+
 
 const uploadDir = path.join(__dirname, 'posts');
 
 
 // ✅ SUBSTITUIR esta rota completa:
-app.post('/api/posts', async (req, res) => {
+pp.post('/api/posts', async (req, res) => {
     try {
         const { titulo, conteudo, imagem_base64 } = req.body;
         
@@ -80,7 +74,7 @@ app.post('/api/posts', async (req, res) => {
             }
         }
 
-        // Salvar no Aiven (apenas a URL)
+        // Salvar no Aiven
         const query = 'INSERT INTO posts (titulo, conteudo, foto_url, data_criacao) VALUES (?, ?, ?, NOW())';
         
         cone.execute(query, [titulo, conteudo, foto_url], (err, results) => {
@@ -92,8 +86,7 @@ app.post('/api/posts', async (req, res) => {
             res.status(201).json({ 
                 success: true, 
                 message: "Post criado com sucesso!",
-                postId: results.insertId,
-                imagemUrl: foto_url 
+                postId: results.insertId
             });
         });
         
@@ -163,7 +156,7 @@ app.post('/api/posts', async (req, res) => {
 
   function verificarEmail(email) {
     return new Promise((resolve, reject) => {
-      cone.execute('SELECT * FROM tes WHERE email = ?', [email], (err, results) => {
+      cone.execute('SELECT * FROM Usuarios WHERE email = ?', [email], (err, results) => {
         if (err) {
           reject(err);
           return;
@@ -177,7 +170,7 @@ app.post('/api/posts', async (req, res) => {
   // Função para inserir usuário usando Promise
   function inserirUsuario(nome, email, senha) {
     return new Promise((resolve, reject) => {
-      cone.execute('INSERT INTO tes (nome, email, senha) VALUES (?,?,?)',
+      cone.execute('INSERT INTO Usuarios (nome, email, senha) VALUES (?,?,?)',
         [nome, email, senha], (err, results) => {
           if (err) {
             reject(err);
