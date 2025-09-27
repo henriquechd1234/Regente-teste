@@ -15,6 +15,27 @@
             height: auto;
             border-radius: 0.5rem;
         }
+        .like-btn {
+            transition: all 0.3s ease;
+        }
+        .like-btn:hover:not(.logged-out) {
+            transform: scale(1.05);
+        }
+        .like-btn.liked {
+            color: #dc2626;
+        }
+        .like-btn.logged-out {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans antialiased">
@@ -22,8 +43,10 @@
     <header class="fixed w-full bg-white shadow-md z-50">
         <div class="container mx-auto px-4 py-2 flex justify-between items-center">
             <div class="flex items-center">
-                <img src="CERF.jpg" alt="Logo Colégio Regente Feijó" 
-                     class="h-10 sm:h-12 md:h-14 lg:h-16 w-auto">
+                <!-- Logo simplificada -->
+                <div class="h-10 w-10 bg-indigo-900 rounded-full flex items-center justify-center mr-3">
+                    <span class="text-white font-bold">CRF</span>
+                </div>
                 <span class="ml-2 sm:ml-3 text-lg sm:text-xl md:text-2xl font-bold text-indigo-900 hidden md:block">
                     Colégio Regente Feijó
                 </span>
@@ -39,12 +62,21 @@
             </nav>
 
             <div class="flex items-center">
-                <a href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
-                    <i data-feather="user" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                <!-- Indicador de usuário -->
+                <span id="user-indicator" class="text-indigo-900 mr-3 hidden sm:inline">
+                    <i data-feather="user" class="w-4 h-4 inline mr-1"></i>
+                    <span id="username-display">Visitante</span>
+                </span>
+                
+                <!-- Botão Login/Logout -->
+                <a id="login-logout-btn" href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
+                    <i data-feather="log-in" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                 </a>
-                <a href="enviarpost.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
+                
+                <a href="enviar.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
                     <i data-feather="plus" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                 </a>
+                
                 <button class="md:hidden focus:outline-none" id="mobile-menu-button">
                     <i data-feather="menu" class="w-6 h-6 text-indigo-900"></i>
                 </button>
@@ -59,7 +91,7 @@
                 <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
                 <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
                 <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
-                <a href="enviarpost.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Criar Notícia</a>
+                <a href="enviar.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Criar Notícia</a>
             </nav>
         </div>
     </header>
@@ -72,7 +104,7 @@
 
             <!-- Botão Criar Nova Notícia -->
             <div class="mb-8">
-                <a href="enviarpost.html" class="inline-flex items-center px-6 py-3 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition">
+                <a href="enviar.html" class="inline-flex items-center px-6 py-3 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition">
                     <i data-feather="plus" class="w-4 h-4 mr-2"></i>
                     Criar Nova Notícia
                 </a>
@@ -80,7 +112,10 @@
 
             <!-- Lista de Posts -->
             <div id="postsList">
-                <p>Carregando posts...</p>
+                <div class="flex justify-center items-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-900"></div>
+                    <span class="ml-3 text-gray-600">Carregando notícias...</span>
+                </div>
             </div>
         </div>
     </main>
@@ -101,16 +136,128 @@
             menu.classList.toggle('hidden');
         });
 
-        // ✅ FUNÇÃO PARA CARREGAR POSTS DA API
+        // ✅ SISTEMA DE AUTENTICAÇÃO E CURTIDAS
+        let currentUser = null;
+
+        // Verificar se usuário está logado
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/user-info', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.loggedIn) {
+                        currentUser = data.user;
+                        updateUserUI();
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao verificar autenticação:', error);
+            }
+            
+            currentUser = null;
+            updateUserUI();
+            return false;
+        }
+
+        // Atualizar UI com informações do usuário
+        function updateUserUI() {
+            const userIndicator = document.getElementById('user-indicator');
+            const usernameDisplay = document.getElementById('username-display');
+            const loginLogoutBtn = document.getElementById('login-logout-btn');
+            
+            if (currentUser) {
+                userIndicator.classList.remove('hidden');
+                usernameDisplay.textContent = currentUser.nome;
+                loginLogoutBtn.innerHTML = '<i data-feather="log-out" class="w-5 h-5 sm:w-6 sm:h-6"></i>';
+                loginLogoutBtn.href = 'javascript:void(0)';
+                loginLogoutBtn.onclick = logout;
+            } else {
+                userIndicator.classList.add('hidden');
+                usernameDisplay.textContent = 'Visitante';
+                loginLogoutBtn.innerHTML = '<i data-feather="log-in" class="w-5 h-5 sm:w-6 sm:h-6"></i>';
+                loginLogoutBtn.href = 'login.html';
+                loginLogoutBtn.onclick = null;
+            }
+            feather.replace();
+        }
+
+        // ✅ LOGOUT
+        async function logout() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    currentUser = null;
+                    updateUserUI();
+                    await carregarPosts();
+                    alert('Logout realizado com sucesso!');
+                }
+            } catch (error) {
+                console.error('Erro ao fazer logout:', error);
+            }
+        }
+
+        // ✅ SISTEMA DE CURTIDAS
+        async function toggleLike(postId) {
+            if (!currentUser) {
+                alert('Você precisa fazer login para curtir notícias.');
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            try {
+                const response = await fetch(`/api/posts/${postId}/curtir`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.status === 401) {
+                    currentUser = null;
+                    updateUserUI();
+                    alert('Sessão expirada. Faça login novamente.');
+                    window.location.href = 'login.html';
+                    return false;
+                }
+                
+                if (!response.ok) {
+                    throw new Error('Erro ao curtir');
+                }
+                
+                const result = await response.json();
+                
+                // Efeito visual
+                const likeBtn = document.querySelector(`.like-btn[data-post-id="${postId}"]`);
+                if (likeBtn) {
+                    likeBtn.classList.add('pulse');
+                    setTimeout(() => likeBtn.classList.remove('pulse'), 500);
+                }
+                
+                // Recarregar posts para atualizar contagem
+                await carregarPosts();
+                return result.curtida;
+                
+            } catch (error) {
+                console.error('Erro ao curtir:', error);
+                alert('Erro ao processar curtida. Tente novamente.');
+                return false;
+            }
+        }
+
+        // ✅ CARREGAR POSTS
         async function carregarPosts() {
             const postsList = document.getElementById('postsList');
             
             try {
-                // Mostrar loading
-                postsList.innerHTML = '<p class="text-gray-600">Carregando posts...</p>';
-
-                // Fazer requisição para a API
-                const response = await fetch('/api/posts');
+                const response = await fetch('/api/posts', {
+                    credentials: 'include'
+                });
                 
                 if (!response.ok) {
                     throw new Error('Erro ao carregar posts');
@@ -118,14 +265,14 @@
                 
                 const posts = await response.json();
 
-                // Verificar se há posts
                 if (posts.length === 0) {
                     postsList.innerHTML = `
-                        <div class="text-center py-8">
+                        <div class="text-center py-12 bg-white rounded-lg shadow-sm">
                             <i data-feather="file-text" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
-                            <p class="text-gray-600">Nenhum post publicado ainda.</p>
-                            <a href="enviar.html" class="inline-block mt-4 text-indigo-600 hover:text-indigo-800">
-                                Seja o primeiro a publicar!
+                            <p class="text-gray-600 text-lg mb-2">Nenhuma notícia publicada ainda.</p>
+                            <a href="enviar.html" class="inline-flex items-center px-4 py-2 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition">
+                                <i data-feather="plus" class="w-4 h-4 mr-2"></i>
+                                Criar Primeira Notícia
                             </a>
                         </div>
                     `;
@@ -150,17 +297,26 @@
                         </div>
                         
                         <div class="flex justify-between items-center text-sm text-gray-500 border-t pt-3">
-                            <span>Publicado em: ${formatarData(post.data_criacao)}</span>
+                            <div class="flex items-center space-x-4">
+                                <span>Publicado em: ${formatarData(post.data_criacao)}</span>
+                                <!-- Botão de Curtir -->
+                                <button class="like-btn flex items-center space-x-1 ${post.usuario_curtiu ? 'liked' : ''} ${!currentUser ? 'logged-out' : ''}" 
+                                        data-post-id="${post.id}" 
+                                        onclick="toggleLike(${post.id})"
+                                        ${!currentUser ? 'title="Faça login para curtir"' : ''}>
+                                    <i data-feather="heart" class="w-4 h-4 ${post.usuario_curtiu ? 'fill-current' : ''}"></i>
+                                    <span class="like-count" data-post-id="${post.id}">${post.curtidas_count}</span>
+                                </button>
+                            </div>
                             <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
                                 Post #${post.id}
                             </span>
                         </div>
                     </div>
                 `).join('');
-
-                // Atualizar ícones do feather
+                
                 feather.replace();
-
+                
             } catch (error) {
                 console.error('Erro ao carregar posts:', error);
                 postsList.innerHTML = `
@@ -176,7 +332,7 @@
             }
         }
 
-        // ✅ FUNÇÃO PARA FORMATAR DATA
+        // ✅ FUNÇÕES AUXILIARES
         function formatarData(dataString) {
             const data = new Date(dataString);
             return data.toLocaleDateString('pt-BR', {
@@ -188,7 +344,6 @@
             });
         }
 
-        // ✅ FUNÇÃO PARA EVITAR XSS
         function escapeHtml(unsafe) {
             if (!unsafe) return '';
             return unsafe
@@ -199,17 +354,11 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // ✅ CARREGAR POSTS QUANDO A PÁGINA ABRIR
-        document.addEventListener('DOMContentLoaded', function() {
-            carregarPosts();
+        // ✅ INICIALIZAÇÃO
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkAuth();
+            await carregarPosts();
         });
-
-        // ✅ ATUALIZAR ÍCONES PERIODICAMENTE
-        setInterval(() => {
-            feather.replace();
-        }, 1000);
     </script>
 </body>
 </html>
-
-
