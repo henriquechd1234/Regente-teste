@@ -1,24 +1,23 @@
 {
- 
-  "name": "site-regente-deploy",
+  "name": "colegio-regente-feijo",
   "version": "1.0.0",
+  "description": "Sistema de posts do Colégio Regente Feijó",
+  "main": "deploy.js",
   "scripts": {
-    "deploy": "node deploy.js",
-    "list-files": "node -e \"const d = require('./deploy-frontend.js'); console.log('Files:', d.getFrontendFiles())\"",
-    "install-deps": "npm install axios"
+    "start": "node deploy.js",
+    "dev": "nodemon deploy.js"
   },
   "dependencies": {
-    "axios": "^1.6.0",
+    "mysql2": "^3.6.0",
+    "express": "^4.18.0",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "express-session": "^1.18.2",
-    "multer": "^2.0.2",
-    "mysql2": "^3.15.0",
-    "node-fetch": "^2.6.1"
+    "express-session": "^1.17.0",
+    "node-fetch": "^2.6.7"
   },
-
-
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   }
 }
