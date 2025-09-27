@@ -3,7 +3,7 @@
   "name": "site-regente-deploy",
   "version": "1.0.0",
   "scripts": {
-    "deploy": "node deploy-frontend.js",
+    "deploy": "node deploy.js",
     "list-files": "node -e \"const d = require('./deploy-frontend.js'); console.log('Files:', d.getFrontendFiles())\"",
     "install-deps": "npm install axios"
   },
