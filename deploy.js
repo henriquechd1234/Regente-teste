@@ -38,7 +38,7 @@ const uploadDir = path.join(__dirname, 'posts');
 
 
 // ✅ SUBSTITUIR esta rota completa:
-pp.post('/api/posts', async (req, res) => {
+app.post('/api/posts', async (req, res) => {
     try {
         const { titulo, conteudo, imagem_base64 } = req.body;
         
