@@ -4,7 +4,8 @@
   const cors = require('cors');
   const session= require('express-session');
   const fs = require('fs');
-  const multer = require('multer');
+  const fetch = require('node-fetch'); 
+
 
   const app = express();
   const port = 3000;
@@ -22,45 +23,85 @@
   app.use(express.json({limit: '10mb'}));
   app.use(express.static("public"));
 
-  
-  
+  /*
   const cone = mysql.createConnection({
     host: 'regentte-cauadesplanches5-2f80.j.aivencloud.com',
     user: 'avnadmin',
     database: 'defaultdb',
     password: 'AVNS_7ISC-ZZEwf_msIR4-YX',
     port: '20358'
-  });
+  });*/
 
-  // const cone = mysql.createConnection({
-  //   host: 'localhost',
-  //   user: 'root',
-  //   database: 'teste1',
-  //   password: '',
-  //   port: '3306'
-  // })
+  const cone = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    database: 'testes',
+    password: '',
+    port: '3306'
+  })
 
-  const uploadDir = path.join(__dirname, 'posts');
+const uploadDir = path.join(__dirname, 'posts');
 
-  // Configuração do multer para upload de imagens
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
 
-      cb(null, file.fieldname + '-' + Date.now() + Math.round(Math.random() * 1E9) + path.extname(file.originalname));
+// ✅ SUBSTITUIR esta rota completa:
+app.post('/api/posts', async (req, res) => {
+    try {
+        const { titulo, conteudo, imagem_base64 } = req.body;
+        
+        if (!titulo || !conteudo) {
+            return res.status(400).json({ error: "Dados incompletos" });
+        }
+
+        let foto_url = null;
+
+        // Upload para ImgBB se tiver imagem
+        if (imagem_base64) {
+            console.log('📤 Fazendo upload para ImgBB...');
+            
+            const base64Data = imagem_base64.split(',')[1]; // Remove "data:image/..."
+            
+            const formData = new URLSearchParams();
+            formData.append('key', process.env.IMGBB_API_KEY || '350fbab0c0ca8b5d3f85a0c1139tcda');
+            formData.append('image', base64Data);
+            
+            const response = await fetch('https://api.imgbb.com/1/upload', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                foto_url = data.data.url;
+                console.log('✅ Imagem salva na nuvem:', foto_url);
+            } else {
+                console.error('❌ Erro ImgBB:', data.error);
+                return res.status(500).json({ error: "Erro ao salvar imagem" });
+            }
+        }
+
+        // Salvar no Aiven (apenas a URL)
+        const query = 'INSERT INTO posts (titulo, conteudo, foto_url, data_criacao) VALUES (?, ?, ?, NOW())';
+        
+        cone.execute(query, [titulo, conteudo, foto_url], (err, results) => {
+            if (err) {
+                console.error('Erro ao salvar no banco:', err);
+                return res.status(500).json({ error: "Erro interno do servidor" });
+            }
+            
+            res.status(201).json({ 
+                success: true, 
+                message: "Post criado com sucesso!",
+                postId: results.insertId,
+                imagemUrl: foto_url 
+            });
+        });
+        
+    } catch (error) {
+        console.error('Erro no cadastro de post:', error);
+        res.status(500).json({ error: "Erro interno do servidor" });
     }
-    
-
-
-  });
-
- const upload = multer({
-    storage: storage,
-    
-   });
-  app.use('/posts', express.static(path.join(__dirname, "./posts")));
+});
 
   let img = null;
   app.post('/api/posts', upload.single('foto'), async (req, res) => {
@@ -122,7 +163,7 @@
 
   function verificarEmail(email) {
     return new Promise((resolve, reject) => {
-      cone.execute('SELECT * FROM Usuarios WHERE email = ?', [email], (err, results) => {
+      cone.execute('SELECT * FROM tes WHERE email = ?', [email], (err, results) => {
         if (err) {
           reject(err);
           return;
@@ -136,7 +177,7 @@
   // Função para inserir usuário usando Promise
   function inserirUsuario(nome, email, senha) {
     return new Promise((resolve, reject) => {
-      cone.execute('INSERT INTO Usuarios (nome, email, senha) VALUES (?,?,?)',
+      cone.execute('INSERT INTO tes (nome, email, senha) VALUES (?,?,?)',
         [nome, email, senha], (err, results) => {
           if (err) {
             reject(err);
@@ -156,9 +197,13 @@
   app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
   });
-  app.get('/post', (req, res)=>
+  app.get('/enviar', (req, res)=>
   {
-  res.sendFile(path.join(__dirname, 'public','post.html')); 
+  res.sendFile(path.join(__dirname, 'public','enviarposts.html')); 
+  })
+  app.get('/posts', (req, res)=>
+  {
+  res.sendFile(path.join(__dirname, 'public','posts.html')); 
   })
 
   app.get('/health', (req, res) => {
@@ -229,7 +274,7 @@
 
   function verificarUsuario(email, senha) {
     return new Promise((resolve, reject) => {
-      cone.execute("SELECT * FROM Usuarios WHERE email = ? AND senha = ?",
+      cone.execute("SELECT * FROM tes WHERE email = ? AND senha = ?",
         [email, senha], (err, results) => {
           if (err) {
             console.log("Deu erro 3", err);
@@ -249,4 +294,4 @@
   app.listen(port, () => {
     console.log(`Server rodando na porta ${port}`);
     console.log(`Acesse: http://localhost:${port}`);
-  });
+  })
