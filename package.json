@@ -1,20 +1,23 @@
 {
+ {
   "name": "site-regente-deploy",
   "version": "1.0.0",
-  "main": "deploy.js",
   "scripts": {
-    "start": "node deploy.js",
-    "dev": "nodemon deploy.js"
+    "deploy": "node deploy-frontend.js",
+    "list-files": "node -e \"const d = require('./deploy-frontend.js'); console.log('Files:', d.getFrontendFiles())\"",
+    "install-deps": "npm install axios"
   },
- "dependencies": {
+  "dependencies": {
     "axios": "^1.6.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "multer": "^2.0.2",
-    "mysql2": "^3.15.0"
-  
-},
+    "mysql2": "^3.15.0",
+    "node-fetch": "^2.6.1"
+  }
+}
+
   "engines": {
     "node": ">=14.0.0"
   }
