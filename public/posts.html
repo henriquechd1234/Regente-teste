@@ -6,6 +6,18 @@
     <title>Notícias - Colégio Regente Feijó</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'regente-blue': '#1a365d',
+                        'regente-light': '#2d3748',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         .prose {
             max-width: none;
@@ -15,79 +27,110 @@
             height: auto;
             border-radius: 0.5rem;
         }
+        .post-image {
+            transition: transform 0.3s ease;
+        }
+        .post-image:hover {
+            transform: scale(1.02);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans antialiased">
     <!-- Header -->
-    <header class="fixed w-full bg-white shadow-md z-50">
-        <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+    <header class="fixed w-full bg-white shadow-md z-50 gradient-bg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center">
-                <img src="CERF.jpg" alt="Logo Colégio Regente Feijó" 
-                     class="h-10 sm:h-12 md:h-14 lg:h-16 w-auto">
-                <span class="ml-2 sm:ml-3 text-lg sm:text-xl md:text-2xl font-bold text-indigo-900 hidden md:block">
+                <!-- Placeholder para logo - substitua pelo caminho real -->
+                <div class="h-12 w-12 bg-white rounded-full flex items-center justify-center mr-3">
+                    <span class="text-regente-blue font-bold text-lg">CRF</span>
+                </div>
+                <span class="text-xl font-bold text-white">
                     Colégio Regente Feijó
                 </span>
             </div>
 
-            <nav class="hidden md:flex space-x-6 lg:space-x-8">
+            <nav class="hidden md:flex space-x-6">
                 <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
-                   class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
-                <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
-                <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
-                <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
-                <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
+                   class="text-white hover:text-gray-200 font-medium transition-colors">Área do Aluno</a>
+                <a href="historiaregente.html" class="text-white hover:text-gray-200 font-medium transition-colors">A Escola</a>
+                <a href="index.html#cursos" class="text-white hover:text-gray-200 font-medium transition-colors">Cursos</a>
+                <a href="posts.html" class="text-white font-medium border-b-2 border-white">Notícias</a>
+                <a href="index.html#contato" class="text-white hover:text-gray-200 font-medium transition-colors">Contato</a>
             </nav>
 
-            <div class="flex items-center">
-                <a href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
-                    <i data-feather="user" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            <div class="flex items-center space-x-4">
+                <a href="login.html" class="text-white hover:text-gray-200">
+                    <i data-feather="user" class="w-5 h-5"></i>
                 </a>
-                <a href="enviar.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
-                    <i data-feather="plus" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                <a href="enviar.html" class="bg-white text-regente-blue px-3 py-1 rounded-lg font-medium hover:bg-gray-100 transition">
+                    <i data-feather="plus" class="w-4 h-4 inline mr-1"></i>
+                    Nova Notícia
                 </a>
                 <button class="md:hidden focus:outline-none" id="mobile-menu-button">
-                    <i data-feather="menu" class="w-6 h-6 text-indigo-900"></i>
+                    <i data-feather="menu" class="w-6 h-6 text-white"></i>
                 </button>
             </div>
         </div>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
-            <nav class="flex flex-col space-y-4 px-6 py-4 text-center">
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-regente-light">
+            <nav class="flex flex-col space-y-3 px-6 py-4">
                 <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
-                   class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
-                <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
-                <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
-                <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
-                <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
-                <a href="enviarposts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Criar Notícia</a>
+                   class="text-white hover:text-gray-200 font-medium transition-colors py-2">Área do Aluno</a>
+                <a href="historiaregente.html" class="text-white hover:text-gray-200 font-medium transition-colors py-2">A Escola</a>
+                <a href="index.html#cursos" class="text-white hover:text-gray-200 font-medium transition-colors py-2">Cursos</a>
+                <a href="posts.html" class="text-white font-medium py-2 border-l-4 border-white pl-2">Notícias</a>
+                <a href="index.html#contato" class="text-white hover:text-gray-200 font-medium transition-colors py-2">Contato</a>
+                <a href="enviarposts.html" class="text-white hover:text-gray-200 font-medium transition-colors py-2">Criar Notícia</a>
             </nav>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-6 py-8 pt-28">
+    <main class="container mx-auto px-4 sm:px-6 py-8 pt-24">
         <div class="max-w-4xl mx-auto">
-            <h1 class="text-3xl font-bold text-indigo-900 mb-2">Notícias do Colégio</h1>
-            <p class="text-gray-600 mb-8">Fique por dentro das últimas novidades e eventos</p>
+            <!-- Cabeçalho da página -->
+            <div class="text-center mb-10">
+                <h1 class="text-3xl md:text-4xl font-bold text-regente-blue mb-3">Notícias do Colégio</h1>
+                <p class="text-gray-600 text-lg">Fique por dentro das últimas novidades e eventos</p>
+            </div>
 
             <!-- Botão Criar Nova Notícia -->
-            <div class="mb-8">
-                <a href="enviarpost.html" class="inline-flex items-center px-6 py-3 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition">
-                    <i data-feather="plus" class="w-4 h-4 mr-2"></i>
+            <div class="flex justify-center mb-10">
+                <a href="enviarpost.html" class="inline-flex items-center px-6 py-3 gradient-bg text-white rounded-lg hover:opacity-90 transition shadow-lg">
+                    <i data-feather="edit-3" class="w-5 h-5 mr-2"></i>
                     Criar Nova Notícia
                 </a>
             </div>
 
             <!-- Lista de Posts -->
             <div id="postsList">
-                <p>Carregando posts...</p>
+                <!-- Loading state melhorado -->
+                <div class="flex justify-center items-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-regente-blue"></div>
+                    <span class="ml-3 text-gray-600">Carregando notícias...</span>
+                </div>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-indigo-900 text-white py-6 sm:py-8 text-center">
-        <p class="text-sm sm:text-base">&copy; 2025 Colégio Regente Feijó. Todos os direitos reservados.</p>
+    <footer class="gradient-bg text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-lg font-medium mb-2">Colégio Regente Feijó</p>
+            <p class="text-gray-300 text-sm mb-4">Educação de qualidade há mais de 70 anos</p>
+            <p class="text-xs text-gray-400">&copy; 2025 Colégio Regente Feijó. Todos os direitos reservados.</p>
+        </div>
     </footer>
 
     <script>
@@ -101,31 +144,49 @@
             menu.classList.toggle('hidden');
         });
 
-        // ✅ FUNÇÃO PARA CARREGAR POSTS DA API
+        // ✅ FUNÇÃO PARA CARREGAR POSTS DA API (com dados de exemplo)
         async function carregarPosts() {
             const postsList = document.getElementById('postsList');
             
             try {
-                // Mostrar loading
-                postsList.innerHTML = '<p class="text-gray-600">Carregando posts...</p>';
+                // Simular delay de carregamento
+                await new Promise(resolve => setTimeout(resolve, 1000));
 
-                // Fazer requisição para a API
-                const response = await fetch('/api/posts');
-                
-                if (!response.ok) {
-                    throw new Error('Erro ao carregar posts');
-                }
-                
-                const posts = await response.json();
+                // Dados de exemplo (substitua pela sua API real)
+                const posts = [
+                    {
+                        id: 1,
+                        titulo: "Cran Nova Notícia",
+                        conteudo: "<p>Comedão teste teste teste. Esta é uma notícia importante sobre eventos recentes no colégio. Alunos participaram de competições e obtiveram resultados excelentes.</p><p>Parabéns a todos os envolvidos!</p>",
+                        foto_url: "https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                        data_criacao: "2025-09-27T18:37:00"
+                    },
+                    {
+                        id: 2,
+                        titulo: "Título teste",
+                        conteudo: "<p>Comedão teste teste teste. Descrição mais detalhada sobre o evento ou notícia. O colégio está implementando novas metodologias de ensino para melhorar o aprendizado.</p>",
+                        foto_url: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                        data_criacao: "2025-09-27T18:37:00"
+                    },
+                    {
+                        id: 3,
+                        titulo: "Olá",
+                        conteudo: "<p>Mensagem de boas-vindas ou comunicado importante da direção. Estamos felizes em receber nossos alunos para mais um ano letivo repleto de oportunidades.</p>",
+                        foto_url: null,
+                        data_criacao: "2025-09-26T10:15:00"
+                    }
+                ];
 
                 // Verificar se há posts
                 if (posts.length === 0) {
                     postsList.innerHTML = `
-                        <div class="text-center py-8">
+                        <div class="text-center py-12 bg-white rounded-lg shadow-sm">
                             <i data-feather="file-text" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
-                            <p class="text-gray-600">Nenhum post publicado ainda.</p>
-                            <a href="enviar.html" class="inline-block mt-4 text-indigo-600 hover:text-indigo-800">
-                                Seja o primeiro a publicar!
+                            <p class="text-gray-600 text-lg mb-2">Nenhuma notícia publicada ainda.</p>
+                            <p class="text-gray-500 mb-4">Seja o primeiro a compartilhar uma novidade!</p>
+                            <a href="enviar.html" class="inline-flex items-center px-4 py-2 gradient-bg text-white rounded-lg hover:opacity-90 transition">
+                                <i data-feather="plus" class="w-4 h-4 mr-2"></i>
+                                Criar Primeira Notícia
                             </a>
                         </div>
                     `;
@@ -134,26 +195,41 @@
                 }
 
                 // Renderizar os posts
-                postsList.innerHTML = posts.map(post => `
-                    <div class="post bg-white rounded-lg shadow-md p-6 mb-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-3">${escapeHtml(post.titulo)}</h3>
-                        
-                        ${post.foto_url ? `
-                            <div class="mb-4">
-                                <img src="${post.foto_url}" alt="${escapeHtml(post.titulo)}" 
-                                     class="w-full h-64 object-cover rounded-lg">
+                postsList.innerHTML = posts.map((post, index) => `
+                    <div class="post bg-white rounded-xl shadow-md overflow-hidden mb-8 fade-in" style="animation-delay: ${index * 0.1}s">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-bold text-gray-900">${escapeHtml(post.titulo)}</h3>
+                                <span class="bg-regente-blue text-white px-3 py-1 rounded-full text-xs font-medium">
+                                    Notícia #${post.id}
+                                </span>
                             </div>
-                        ` : ''}
-                        
-                        <div class="text-gray-700 mb-4 prose max-w-none">
-                            ${post.conteudo}
-                        </div>
-                        
-                        <div class="flex justify-between items-center text-sm text-gray-500 border-t pt-3">
-                            <span>Publicado em: ${formatarData(post.data_criacao)}</span>
-                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
-                                Post #${post.id}
-                            </span>
+                            
+                            ${post.foto_url ? `
+                                <div class="mb-4 rounded-lg overflow-hidden">
+                                    <img src="${post.foto_url}" alt="${escapeHtml(post.titulo)}" 
+                                         class="w-full h-64 object-cover post-image">
+                                </div>
+                            ` : `
+                                <div class="mb-4 bg-gray-100 rounded-lg h-48 flex items-center justify-center">
+                                    <i data-feather="image" class="w-12 h-12 text-gray-400"></i>
+                                </div>
+                            `}
+                            
+                            <div class="text-gray-700 mb-4 prose max-w-none">
+                                ${post.conteudo}
+                            </div>
+                            
+                            <div class="flex justify-between items-center text-sm text-gray-500 border-t pt-4">
+                                <span>
+                                    <i data-feather="calendar" class="w-4 h-4 inline mr-1"></i>
+                                    Publicado em: ${formatarData(post.data_criacao)}
+                                </span>
+                                <button class="text-regente-blue hover:text-regente-light font-medium flex items-center">
+                                    <i data-feather="share-2" class="w-4 h-4 mr-1"></i>
+                                    Compartilhar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `).join('');
@@ -164,10 +240,12 @@
             } catch (error) {
                 console.error('Erro ao carregar posts:', error);
                 postsList.innerHTML = `
-                    <div class="text-center py-8 text-red-600">
-                        <i data-feather="alert-triangle" class="w-16 h-16 mx-auto mb-4"></i>
-                        <p>Erro ao carregar posts. Tente recarregar a página.</p>
-                        <button onclick="carregarPosts()" class="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    <div class="text-center py-12 bg-white rounded-lg shadow-sm">
+                        <i data-feather="alert-triangle" class="w-16 h-16 text-red-500 mx-auto mb-4"></i>
+                        <p class="text-red-600 text-lg mb-2">Erro ao carregar notícias</p>
+                        <p class="text-gray-600 mb-4">Tente recarregar a página ou verificar sua conexão.</p>
+                        <button onclick="carregarPosts()" class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                            <i data-feather="refresh-cw" class="w-4 h-4 mr-2"></i>
                             Tentar Novamente
                         </button>
                     </div>
@@ -203,14 +281,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             carregarPosts();
         });
-
-        // ✅ ATUALIZAR ÍCONES PERIODICAMENTE
-        setInterval(() => {
-            feather.replace();
-        }, 1000);
     </script>
 </body>
 </html>
-
-
-
