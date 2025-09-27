@@ -5,6 +5,7 @@ const cors = require('cors');
 const session = require('express-session');
 const fs = require('fs');
 const fetch = require('node-fetch');
+const router = express.Router();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -31,7 +32,15 @@ const cone = mysql.createConnection({
     port: '20358'
 });
 
-// ✅ ROTA ÚNICA E CORRETA PARA CRIAR POSTS
+// ✅ MIDDLEWARE DE AUTENTICAÇÃO
+function authMiddleware(req, res, next) {
+    if (!req.session.usuarioId) {
+        return res.status(401).json({ error: 'Não autenticado' });
+    }
+    next();
+}
+
+// ✅ ROTA PARA CRIAR POSTS
 app.post('/api/posts', async (req, res) => {
     try {
         const { titulo, conteudo, imagem_base64 } = req.body;
@@ -46,7 +55,7 @@ app.post('/api/posts', async (req, res) => {
         if (imagem_base64) {
             console.log('📤 Fazendo upload para ImgBB...');
             
-            const base64Data = imagem_base64.split(',')[1]; // Remove "data:image/..."
+            const base64Data = imagem_base64.split(',')[1];
             
             const formData = new URLSearchParams();
             formData.append('key', process.env.IMGBB_API_KEY || '350fbab0c0ca8b5d3f85a0c1139tcda');
@@ -68,7 +77,7 @@ app.post('/api/posts', async (req, res) => {
             }
         }
 
-        // Salvar no Aiven
+        // Salvar no banco
         const query = 'INSERT INTO posts (titulo, conteudo, foto_url, data_criacao) VALUES (?, ?, ?, NOW())';
         
         cone.execute(query, [titulo, conteudo, foto_url], (err, results) => {
@@ -90,17 +99,156 @@ app.post('/api/posts', async (req, res) => {
     }
 });
 
-// Rota para listar posts
+// ✅ ROTA PARA LISTAR POSTS COM INFO DE CURTIDAS
 app.get('/api/posts', (req, res) => {
-    const query = 'SELECT * FROM posts ORDER BY data_criacao DESC';
+    const usuarioId = req.session.usuarioId || null;
     
-    cone.execute(query, (err, results) => {
+    const query = `
+        SELECT p.*, 
+               COUNT(c.id) as curtidas_count,
+               EXISTS(
+                   SELECT 1 FROM curtidas c2 
+                   WHERE c2.post_id = p.id AND c2.usuario_id = ?
+               ) as usuario_curtiu
+        FROM posts p
+        LEFT JOIN curtidas c ON p.id = c.post_id
+        GROUP BY p.id
+        ORDER BY p.data_criacao DESC
+    `;
+    
+    cone.execute(query, [usuarioId], (err, results) => {
         if (err) {
             console.error('Erro ao buscar posts:', err);
             return res.status(500).json({ error: "Erro interno do servidor" });
         }
         
         return res.json(results);
+    });
+});
+
+// ✅ ROTA PARA CURTIR/DESCURTIR POSTS
+app.post('/api/posts/:id/curtir', authMiddleware, (req, res) => {
+    try {
+        const postId = req.params.id;
+        const usuarioId = req.session.usuarioId;
+
+        // Verificar se post existe
+        cone.execute('SELECT * FROM posts WHERE id = ?', [postId], (err, postResults) => {
+            if (err) {
+                console.error('Erro ao verificar post:', err);
+                return res.status(500).json({ error: "Erro interno do servidor" });
+            }
+
+            if (postResults.length === 0) {
+                return res.status(404).json({ error: 'Post não encontrado' });
+            }
+
+            // Verificar se já curtiu
+            cone.execute(
+                'SELECT * FROM curtidas WHERE post_id = ? AND usuario_id = ?',
+                [postId, usuarioId],
+                (err, curtidaResults) => {
+                    if (err) {
+                        console.error('Erro ao verificar curtida:', err);
+                        return res.status(500).json({ error: "Erro interno do servidor" });
+                    }
+
+                    if (curtidaResults.length > 0) {
+                        // Descurtir
+                        cone.execute(
+                            'DELETE FROM curtidas WHERE post_id = ? AND usuario_id = ?',
+                            [postId, usuarioId],
+                            (err, deleteResults) => {
+                                if (err) {
+                                    console.error('Erro ao descurtir:', err);
+                                    return res.status(500).json({ error: "Erro interno do servidor" });
+                                }
+                                res.json({ 
+                                    curtida: false,
+                                    message: 'Curtida removida'
+                                });
+                            }
+                        );
+                    } else {
+                        // Curtir
+                        cone.execute(
+                            'INSERT INTO curtidas (post_id, usuario_id) VALUES (?, ?)',
+                            [postId, usuarioId],
+                            (err, insertResults) => {
+                                if (err) {
+                                    console.error('Erro ao curtir:', err);
+                                    return res.status(500).json({ error: "Erro interno do servidor" });
+                                }
+                                res.json({ 
+                                    curtida: true,
+                                    message: 'Post curtido'
+                                });
+                            }
+                        );
+                    }
+                }
+            );
+        });
+    } catch (error) {
+        console.error('Erro ao processar curtida:', error);
+        res.status(500).json({ error: "Erro interno do servidor" });
+    }
+});
+
+// ✅ ROTA PARA OBTER INFORMAÇÕES DO USUÁRIO LOGADO
+app.get('/api/user-info', (req, res) => {
+    if (!req.session.usuarioId) {
+        return res.json({ loggedIn: false });
+    }
+
+    cone.execute(
+        'SELECT id, nome, email FROM usuarios WHERE id = ?',
+        [req.session.usuarioId],
+        (err, results) => {
+            if (err || results.length === 0) {
+                return res.json({ loggedIn: false });
+            }
+
+            res.json({
+                loggedIn: true,
+                user: results[0]
+            });
+        }
+    );
+});
+
+// ✅ MODIFICAR ROTA DE LOGIN PARA SALVAR SESSÃO
+app.post('/api/login', async (req, res) => {
+    try {
+        const {email, senha} = req.body;
+        const resultados = await verificarUsuario(email, senha);
+        
+        if (resultados.length > 0) {
+            // Salvar usuário na sessão
+            req.session.usuarioId = resultados[0].id;
+            req.session.usuarioNome = resultados[0].nome;
+            
+            return res.status(200).json({ 
+                success: true, 
+                message: "Login bem-sucedido",
+                usuario: resultados[0] 
+            });
+        } else {
+            return res.status(401).json({ error: "Credenciais inválidas", success: false });
+        }
+    } catch (error) {
+        console.error('Erro no login:', error);
+        return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+});
+
+// ✅ ROTA DE LOGOUT
+app.post('/api/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ error: "Erro ao fazer logout" });
+        }
+        res.json({ success: true, message: "Logout realizado com sucesso" });
     });
 });
 
@@ -207,26 +355,6 @@ app.post('/api/register', async (req, res) => {
 
     } catch (error) {
         console.error('Erro no cadastro:', error);
-        return res.status(500).json({ error: "Erro interno do servidor" });
-    }
-});
-
-app.post('/api/login', async (req, res) => {
-    try {
-        const {email, senha} = req.body;
-        const resultados = await verificarUsuario(email, senha);
-        
-        if (resultados.length > 0) {
-            return res.status(200).json({ 
-                success: true, 
-                message: "Login bem-sucedido",
-                usuario: resultados[0] 
-            });
-        } else {
-            return res.status(401).json({ error: "Credenciais inválidas", success: false });
-        }
-    } catch (error) {
-        console.error('Erro no login:', error);
         return res.status(500).json({ error: "Erro interno do servidor" });
     }
 });
