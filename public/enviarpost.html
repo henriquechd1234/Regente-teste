@@ -197,51 +197,68 @@
             imagePreviewContainer.classList.add('hidden');
         }
 
-        // ✅ FUNÇÃO CORRIGIDA - criarPost
-        async function criarPost() {
-            const titulo = document.getElementById('titulo').value;
-            const conteudo = document.getElementById('conteudo').innerHTML;
-            const fileInput = document.getElementById('dropzone-file');
+      // ✅ FUNÇÃO CORRIGIDA - criarPost
+async function criarPost() {
+    const titulo = document.getElementById('titulo').value;
+    const conteudo = document.getElementById('conteudo').innerHTML;
+    const fileInput = document.getElementById('dropzone-file');
 
-            // Validação dos campos obrigatórios
-            if (!titulo.trim()) {
-                showToast('Por favor, preencha o título!', 'error');
+    // Validação dos campos obrigatórios
+    if (!titulo.trim()) {
+        showToast('Por favor, preencha o título!', 'error');
+        return;
+    }
+
+    if (!conteudo.trim() || conteudo === '<br>') {
+        showToast('Por favor, preencha o conteúdo!', 'error');
+        return;
+    }
+
+    try {
+        let imagem_base64 = null;
+        
+        // Converter imagem para Base64 se existir
+        if (fileInput.files[0]) {
+            // Validar tamanho (5MB máximo)
+            if (fileInput.files[0].size > 5 * 1024 * 1024) {
+                showToast('A imagem deve ter no máximo 5MB', 'error');
                 return;
             }
-
-            if (!conteudo.trim() || conteudo === '<br>') {
-                showToast('Por favor, preencha o conteúdo!', 'error');
-                return;
-            }
-
-            try {
-                const formData = new FormData();
-                formData.append('titulo', titulo);
-                formData.append('conteudo', conteudo);
-                
-                // ✅ ADICIONAR IMAGEM SE EXISTIR
-                if (fileInput.files[0]) {
-                    formData.append('foto', fileInput.files[0]);
-                }
-
-                const response = await fetch('/api/posts', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showToast('Notícia publicada com sucesso!', 'success');
-                    limparFormulario();
-                } else {
-                    showToast(data.error || 'Erro ao publicar notícia', 'error');
-                }
-            } catch (error) {
-                showToast('Erro ao conectar com o servidor', 'error');
-                console.error('Erro:', error);
-            }
+            
+            imagem_base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(fileInput.files[0]);
+            });
         }
+
+        // ✅ AGORA ENVIA JSON (correto!)
+        const response = await fetch('/api/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // ← IMPORTANTE!
+            },
+            body: JSON.stringify({
+                titulo: titulo,
+                conteudo: conteudo,
+                imagem_base64: imagem_base64  // ← Nome que o backend espera
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast('Notícia publicada com sucesso!', 'success');
+            limparFormulario();
+        } else {
+            showToast(data.error || 'Erro ao publicar notícia', 'error');
+        }
+    } catch (error) {
+        showToast('Erro ao conectar com o servidor', 'error');
+        console.error('Erro:', error);
+    }
+}
 
         // Função para mostrar toast messages
         function showToast(message, type = 'success') {
@@ -273,3 +290,4 @@
     </script>
 </body>
 </html>
+
