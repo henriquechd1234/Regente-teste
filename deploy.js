@@ -5,7 +5,6 @@ const cors = require('cors');
 const session = require('express-session');
 const fs = require('fs');
 const fetch = require('node-fetch');
-const router = express.Router();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -22,14 +21,15 @@ app.use(session({
 
 app.use(cors());
 app.use(express.json({limit: '10mb'}));
+app.use(express.urlencoded({ extended: true })); // Adicione esta linha
 app.use(express.static("public"));
 
 const cone = mysql.createConnection({
-    host: 'regentte-cauadesplanches5-2f80.j.aivencloud.com',
-    user: 'avnadmin',
-    database: 'defaultdb',
-    password: 'AVNS_7ISC-ZZEwf_msIR4-YX',
-    port: '20358'
+    host: 'localhost',
+    user: 'root',
+    database: 'testes',
+    password: '',
+    port: '3306'
 });
 
 // ✅ MIDDLEWARE DE AUTENTICAÇÃO
@@ -51,7 +51,6 @@ app.post('/api/posts', async (req, res) => {
 
         let foto_url = null;
 
-        // Upload para ImgBB se tiver imagem
         if (imagem_base64) {
             console.log('📤 Fazendo upload para ImgBB...');
             
@@ -77,7 +76,6 @@ app.post('/api/posts', async (req, res) => {
             }
         }
 
-        // Salvar no banco
         const query = 'INSERT INTO posts (titulo, conteudo, foto_url, data_criacao) VALUES (?, ?, ?, NOW())';
         
         cone.execute(query, [titulo, conteudo, foto_url], (err, results) => {
@@ -132,7 +130,6 @@ app.post('/api/posts/:id/curtir', authMiddleware, (req, res) => {
         const postId = req.params.id;
         const usuarioId = req.session.usuarioId;
 
-        // Verificar se post existe
         cone.execute('SELECT * FROM posts WHERE id = ?', [postId], (err, postResults) => {
             if (err) {
                 console.error('Erro ao verificar post:', err);
@@ -143,7 +140,6 @@ app.post('/api/posts/:id/curtir', authMiddleware, (req, res) => {
                 return res.status(404).json({ error: 'Post não encontrado' });
             }
 
-            // Verificar se já curtiu
             cone.execute(
                 'SELECT * FROM curtidas WHERE post_id = ? AND usuario_id = ?',
                 [postId, usuarioId],
@@ -202,7 +198,7 @@ app.get('/api/user-info', (req, res) => {
     }
 
     cone.execute(
-        'SELECT id, nome, email FROM Usuarios WHERE id = ?',
+        'SELECT id, nome, email FROM usuarios WHERE id = ?',
         [req.session.usuarioId],
         (err, results) => {
             if (err || results.length === 0) {
@@ -217,10 +213,20 @@ app.get('/api/user-info', (req, res) => {
     );
 });
 
-// ✅ MODIFICAR ROTA DE LOGIN PARA SALVAR SESSÃO
+// ✅ CORRIGINDO ROTA DE LOGIN
 app.post('/api/login', async (req, res) => {
     try {
-        const {email, senha} = req.body;
+        console.log('📥 Dados recebidos no login:', req.body);
+        
+        const { email, senha } = req.body;
+        
+        if (!email || !senha) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Email e senha são obrigatórios" 
+            });
+        }
+
         const resultados = await verificarUsuario(email, senha);
         
         if (resultados.length > 0) {
@@ -228,17 +234,26 @@ app.post('/api/login', async (req, res) => {
             req.session.usuarioId = resultados[0].id;
             req.session.usuarioNome = resultados[0].nome;
             
-            return res.status(200).json({ 
+            console.log('✅ Login bem-sucedido para:', resultados[0].nome);
+            
+            return res.json({ 
                 success: true, 
                 message: "Login bem-sucedido",
                 usuario: resultados[0] 
             });
         } else {
-            return res.status(401).json({ error: "Credenciais inválidas", success: false });
+            console.log('❌ Credenciais inválidas para:', email);
+            return res.status(401).json({ 
+                success: false, 
+                error: "Credenciais inválidas" 
+            });
         }
     } catch (error) {
-        console.error('Erro no login:', error);
-        return res.status(500).json({ error: "Erro interno do servidor" });
+        console.error('❌ Erro no login:', error);
+        return res.status(500).json({ 
+            success: false, 
+            error: "Erro interno do servidor" 
+        });
     }
 });
 
@@ -252,18 +267,60 @@ app.post('/api/logout', (req, res) => {
     });
 });
 
+// ✅ CORRIGINDO ROTA DE CADASTRO
+app.post('/api/register', async (req, res) => {
+    try {
+        console.log('📥 Dados recebidos no cadastro:', req.body);
+        
+        const { nome, senha, email } = req.body;
+
+        // Validação dos dados
+        if (!nome || !senha || !email) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Todos os campos são obrigatórios" 
+            });
+        }
+
+        const emailExiste = await verificarEmail(email);
+
+        if (emailExiste) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Email já existe" 
+            });
+        }
+
+        await inserirUsuario(nome, email, senha);
+        
+        console.log('✅ Usuário cadastrado com sucesso:', nome);
+        
+        return res.json({ 
+            success: true, 
+            message: "Usuário cadastrado com sucesso!" 
+        });
+
+    } catch (error) {
+        console.error('❌ Erro no cadastro:', error);
+        return res.status(500).json({ 
+            success: false, 
+            error: "Erro interno do servidor" 
+        });
+    }
+});
+
 // Conexão com o banco
 cone.connect((err) => {
     if (err) {
         console.error('Erro ao conectar ao MySQL:', err);
         return;
     }
-    console.log('Conectado ao MySQL com sucesso!');
+    console.log('✅ Conectado ao MySQL com sucesso!');
 });
 
 function verificarEmail(email) {
     return new Promise((resolve, reject) => {
-        cone.execute('SELECT * FROM Usuarios WHERE email = ?', [email], (err, results) => {
+        cone.execute('SELECT * FROM usuarios WHERE email = ?', [email], (err, results) => {
             if (err) {
                 reject(err);
                 return;
@@ -275,7 +332,7 @@ function verificarEmail(email) {
 
 function inserirUsuario(nome, email, senha) {
     return new Promise((resolve, reject) => {
-        cone.execute('INSERT INTO Usuarios (nome, email, senha) VALUES (?,?,?)',
+        cone.execute('INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)',
             [nome, email, senha], (err, results) => {
                 if (err) {
                     reject(err);
@@ -288,12 +345,14 @@ function inserirUsuario(nome, email, senha) {
 
 function verificarUsuario(email, senha) {
     return new Promise((resolve, reject) => {
-        cone.execute("SELECT * FROM Usuarios WHERE email = ? AND senha = ?",
+        // CORRIGINDO: mudando de "tes" para "usuarios"
+        cone.execute("SELECT * FROM usuarios WHERE email = ? AND senha = ?",
             [email, senha], (err, results) => {
                 if (err) {
-                    console.log("Erro na verificação:", err);
+                    console.error("❌ Erro na verificação:", err);
                     reject(err);
                 } else {
+                    console.log("🔍 Resultados da verificação:", results);
                     resolve(results);
                 }
             });
@@ -336,29 +395,6 @@ app.get('/health', (req, res) => {
     }
 });
 
-app.post('/api/register', async (req, res) => {
-    try {
-        const { nome, senha, email } = req.body;
-
-        const emailExiste = await verificarEmail(email);
-
-        if (emailExiste) {
-            return res.status(400).json({ error: "EMAIL ja existe" });
-        }
-
-        await inserirUsuario(nome, email, senha);
-        
-        return res.status(201).json({ 
-            success: true, 
-            message: "Usuário cadastrado com sucesso!" 
-        });
-
-    } catch (error) {
-        console.error('Erro no cadastro:', error);
-        return res.status(500).json({ error: "Erro interno do servidor" });
-    }
-});
-
 process.on('SIGTERM', () => {
     console.log('Recebido SIGTERM, encerrando servidor...');
     cone.end();
@@ -366,6 +402,6 @@ process.on('SIGTERM', () => {
 });
 
 app.listen(port, () => {
-    console.log(`Server rodando na porta ${port}`);
-    console.log(`Acesse: http://localhost:${port}`);
+    console.log(`🚀 Server rodando na porta ${port}`);
+    console.log(`📍 Acesse: http://localhost:${port}`);
 });
