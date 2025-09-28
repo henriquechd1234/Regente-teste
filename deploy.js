@@ -330,10 +330,10 @@ function verificarEmail(email) {
     });
 }
 
-function inserirUsuario(nome, email, senha) {
+function inserirUsuario(name, email, senha) {
     return new Promise((resolve, reject) => {
         cone.execute('INSERT INTO Usuarios (nome, email, senha) VALUES (?, ?, ?)',
-            [nome, email, senha], (err, results) => {
+            [name, email, senha], (err, results) => {
                 if (err) {
                     reject(err);
                     return;
