@@ -159,73 +159,90 @@
     </footer>
 
     <script>
-        feather.replace();
+      feather.replace();
 
-        // Menu Mobile Toggle (mesmo código das páginas anteriores)
-        const btn = document.getElementById('mobile-menu-button');
-        const menu = document.getElementById('mobile-menu');
+    // Menu Mobile Toggle
+    const btn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
 
-        btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-        });
+    btn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+    });
 
-        // Validação do formulário de cadastro
-        document.getElementById('cadastroForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
+    // Validação do formulário de cadastro - CORRIGIDO
+    document.getElementById('cadastroForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        // Validações
+        if (!name || !email || !password || !confirmPassword) {
+            alert("Por favor, preencha todos os campos!");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            alert("As senhas não coincidem!");
+            document.getElementById('password').value = '';
+            document.getElementById('confirm-password').value = '';
+            document.getElementById('password').focus();
+            return;
+        }
+
+        if (password.length < 6) {
+            alert("A senha deve ter pelo menos 6 caracteres!");
+            document.getElementById('password').value = '';
+            document.getElementById('confirm-password').value = '';
+            document.getElementById('password').focus();
+            return;
+        }
+
+        try {
+            // CORREÇÃO: URL correta com "/" no início e variáveis corretas
+            const response = await fetch("/api/register", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // CORREÇÃO: Usar as variáveis definidas acima
+                body: JSON.stringify({ 
+                    nome: name,        // ← CORRETO: usar "name" que foi definido
+                    email: email, 
+                    senha: password    // ← CORRETO: mudar para "senha" para o back-end
+                })
+            });
             
-            // Validações
-            if (!name || !email || !password || !confirmPassword) {
-                alert("Por favor, preencha todos os campos!");
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                alert("As senhas não coincidem!");
-                document.getElementById('password').value = '';
-                document.getElementById('confirm-password').value = '';
-                document.getElementById('password').focus();
-                return;
-            }
-
-            if (password.length < 6) {
-                alert("A senha deve ter pelo menos 6 caracteres!");
-                document.getElementById('password').value = '';
-                document.getElementById('confirm-password').value = '';
-                document.getElementById('password').focus();
-                return;
-            }
-
+            // Verificar se a resposta é JSON válido
+            const responseText = await response.text();
+            let resultado;
+            
             try {
-                const response = await fetch("api/register", {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ nome, email, password })
-                });
-                
-                const resultado = await response.json();
-
-                if (resultado.success) {
-                    alert("Cadastro realizado com sucesso! Faça login para continuar.");
-                    window.location.href = "login.html";
-                } else {
-                    alert(resultado.message || "Erro ao realizar cadastro");
-                }
-            } catch (error) {
-                console.error("Erro:", error);
-                alert("Erro de conexão com o servidor");
+                resultado = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('Erro ao parsear JSON:', responseText);
+                alert("Erro no servidor. Tente novamente.");
+                return;
             }
-        });
+
+            if (resultado.success) {
+                alert("Cadastro realizado com sucesso! Faça login para continuar.");
+                window.location.href = "login.html";
+            } else {
+                alert(resultado.error || "Erro ao realizar cadastro");
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro de conexão com o servidor");
+        }
+    });
     </script>
 </body>
 
 </html>
+
 
 
 
