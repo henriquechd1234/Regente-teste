@@ -198,7 +198,7 @@ app.get('/api/user-info', (req, res) => {
     }
 
     cone.execute(
-        'SELECT id, nome, email FROM usuarios WHERE id = ?',
+        'SELECT id, nome, email FROM Usuarios WHERE id = ?',
         [req.session.usuarioId],
         (err, results) => {
             if (err || results.length === 0) {
@@ -272,10 +272,10 @@ app.post('/api/register', async (req, res) => {
     try {
         console.log('📥 Dados recebidos no cadastro:', req.body);
         
-        const { nome, senha, email } = req.body;
+        const { name, senha, email } = req.body;
 
         // Validação dos dados
-        if (!nome || !senha || !email) {
+        if (!name || !senha || !email) {
             return res.status(400).json({ 
                 success: false, 
                 error: "Todos os campos são obrigatórios" 
@@ -320,7 +320,7 @@ cone.connect((err) => {
 
 function verificarEmail(email) {
     return new Promise((resolve, reject) => {
-        cone.execute('SELECT * FROM usuarios WHERE email = ?', [email], (err, results) => {
+        cone.execute('SELECT * FROM Usuarios WHERE email = ?', [email], (err, results) => {
             if (err) {
                 reject(err);
                 return;
@@ -332,7 +332,7 @@ function verificarEmail(email) {
 
 function inserirUsuario(nome, email, senha) {
     return new Promise((resolve, reject) => {
-        cone.execute('INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)',
+        cone.execute('INSERT INTO Usuarios (nome, email, senha) VALUES (?, ?, ?)',
             [nome, email, senha], (err, results) => {
                 if (err) {
                     reject(err);
@@ -346,7 +346,7 @@ function inserirUsuario(nome, email, senha) {
 function verificarUsuario(email, senha) {
     return new Promise((resolve, reject) => {
         // CORRIGINDO: mudando de "tes" para "usuarios"
-        cone.execute("SELECT * FROM usuarios WHERE email = ? AND senha = ?",
+        cone.execute("SELECT * FROM Usuarios WHERE email = ? AND senha = ?",
             [email, senha], (err, results) => {
                 if (err) {
                     console.error("❌ Erro na verificação:", err);
