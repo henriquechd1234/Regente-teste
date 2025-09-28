@@ -25,11 +25,11 @@ app.use(express.urlencoded({ extended: true })); // Adicione esta linha
 app.use(express.static("public"));
 
 const cone = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'testes',
-    password: '',
-    port: '3306'
+    host: 'regentte-cauadesplanches5-2f80.j.aivencloud.com',
+    user: 'avnadmin',
+    database: 'defaultdb',
+    password: 'AVNS_7ISC-ZZEwf_msIR4-YX',
+    port: '20358'
 });
 
 // ✅ MIDDLEWARE DE AUTENTICAÇÃO
