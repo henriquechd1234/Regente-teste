@@ -267,15 +267,16 @@ app.post('/api/logout', (req, res) => {
     });
 });
 
-// ✅ CORRIGINDO ROTA DE CADASTRO
 app.post('/api/register', async (req, res) => {
     try {
         console.log('📥 Dados recebidos no cadastro:', req.body);
         
-        const { name, senha, email } = req.body;
+        // CORREÇÃO: Mudar de "name" para "nome" para bater com o front-end
+        const { nome, senha, email } = req.body;
 
         // Validação dos dados
-        if (!name || !senha || !email) {
+        if (!nome || !senha || !email) {
+            console.log('❌ Campos faltando:', { nome, email, senha: senha ? '***' : 'faltando' });
             return res.status(400).json({ 
                 success: false, 
                 error: "Todos os campos são obrigatórios" 
@@ -307,7 +308,7 @@ app.post('/api/register', async (req, res) => {
             error: "Erro interno do servidor" 
         });
     }
-});
+})
 
 // Conexão com o banco
 cone.connect((err) => {
@@ -330,10 +331,10 @@ function verificarEmail(email) {
     });
 }
 
-function inserirUsuario(name, email, senha) {
+function inserirUsuario(nome, email, senha) {  
     return new Promise((resolve, reject) => {
         cone.execute('INSERT INTO Usuarios (nome, email, senha) VALUES (?, ?, ?)',
-            [name, email, senha], (err, results) => {
+            [nome, email, senha], (err, results) => {  
                 if (err) {
                     reject(err);
                     return;
