@@ -202,7 +202,7 @@ app.get('/api/user-info', (req, res) => {
     }
 
     cone.execute(
-        'SELECT id, nome, email FROM usuarios WHERE id = ?',
+        'SELECT id, nome, email FROM Usuarios WHERE id = ?',
         [req.session.usuarioId],
         (err, results) => {
             if (err || results.length === 0) {
@@ -288,7 +288,7 @@ function inserirUsuario(nome, email, senha) {
 
 function verificarUsuario(email, senha) {
     return new Promise((resolve, reject) => {
-        cone.execute("SELECT * FROM tes WHERE email = ? AND senha = ?",
+        cone.execute("SELECT * FROM Usuarios WHERE email = ? AND senha = ?",
             [email, senha], (err, results) => {
                 if (err) {
                     console.log("Erro na verificação:", err);
