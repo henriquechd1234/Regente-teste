@@ -58,35 +58,47 @@
             </div>
 
             <nav class="hidden md:flex space-x-6 lg:space-x-8">
-      <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
-      <a href="index.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
-      <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
-      <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
-      <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
-      <a href="historiaregente.html#historia" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
-    </nav>
+                <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
+                   class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+                <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+                <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+                <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+                <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
+            </nav>
 
-            <!-- Ícones -->
             <div class="flex items-center">
-      <a href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
-        <i data-feather="user" class="w-5 h-5 sm:w-6 sm:h-6"></i>
-      </a>
-      <button class="md:hidden focus:outline-none" id="mobile-menu-button">
-        <i data-feather="menu" class="w-6 h-6 text-indigo-900"></i>
-      </button>
-    </div>
-  </div>
-  <!-- Mobile Menu (inicialmente escondido) -->
-  <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
-    <nav class="flex flex-col space-y-4 px-6 py-4 text-center">
-      <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
-      <a href="index.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
-      <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
-      <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
-      <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
-      <a href="historiaregente.html#historia" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
-    </nav>
-  </div>
+                <!-- Indicador de usuário -->
+                <span id="user-indicator" class="text-indigo-900 mr-3 hidden sm:inline">
+                    <i data-feather="user" class="w-4 h-4 inline mr-1"></i>
+                    <span id="username-display">Visitante</span>
+                </span>
+
+                <!-- Botão Login/Logout -->
+                <a id="login-logout-btn" href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
+                    <i data-feather="log-in" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                </a>
+
+                <a href="enviarpost.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
+                    <i data-feather="plus" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                </a>
+
+                <button class="md:hidden focus:outline-none" id="mobile-menu-button">
+                    <i data-feather="menu" class="w-6 h-6 text-indigo-900"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
+            <nav class="flex flex-col space-y-4 px-6 py-4 text-center">
+                <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
+                   class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+                <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+                <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+                <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+                <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Historia</a>
+                <a href="enviarpost.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Criar Notícia</a>
+            </nav>
+        </div>
     </header>
 
     <!-- Main Content -->
@@ -138,7 +150,7 @@
                 const response = await fetch('/api/user-info', {
                     credentials: 'include'
                 });
-                
+
                 if (response.ok) {
                     const data = await response.json();
                     if (data.loggedIn) {
@@ -150,7 +162,7 @@
             } catch (error) {
                 console.error('Erro ao verificar autenticação:', error);
             }
-            
+
             currentUser = null;
             updateUserUI();
             return false;
@@ -161,7 +173,7 @@
             const userIndicator = document.getElementById('user-indicator');
             const usernameDisplay = document.getElementById('username-display');
             const loginLogoutBtn = document.getElementById('login-logout-btn');
-            
+
             if (currentUser) {
                 userIndicator.classList.remove('hidden');
                 usernameDisplay.textContent = currentUser.nome;
@@ -185,7 +197,7 @@
                     method: 'POST',
                     credentials: 'include'
                 });
-                
+
                 if (response.ok) {
                     currentUser = null;
                     updateUserUI();
@@ -204,13 +216,13 @@
                 window.location.href = 'login.html';
                 return false;
             }
-            
+
             try {
                 const response = await fetch(`/api/posts/${postId}/curtir`, {
                     method: 'POST',
                     credentials: 'include'
                 });
-                
+
                 if (response.status === 401) {
                     currentUser = null;
                     updateUserUI();
@@ -218,24 +230,24 @@
                     window.location.href = 'login.html';
                     return false;
                 }
-                
+
                 if (!response.ok) {
                     throw new Error('Erro ao curtir');
                 }
-                
+
                 const result = await response.json();
-                
+
                 // Efeito visual
                 const likeBtn = document.querySelector(`.like-btn[data-post-id="${postId}"]`);
                 if (likeBtn) {
                     likeBtn.classList.add('pulse');
                     setTimeout(() => likeBtn.classList.remove('pulse'), 500);
                 }
-                
+
                 // Recarregar posts para atualizar contagem
                 await carregarPosts();
                 return result.curtida;
-                
+
             } catch (error) {
                 console.error('Erro ao curtir:', error);
                 alert('Erro ao processar curtida. Tente novamente.');
@@ -246,16 +258,16 @@
         // ✅ CARREGAR POSTS
         async function carregarPosts() {
             const postsList = document.getElementById('postsList');
-            
+
             try {
                 const response = await fetch('/api/posts', {
                     credentials: 'include'
                 });
-                
+
                 if (!response.ok) {
                     throw new Error('Erro ao carregar posts');
                 }
-                
+
                 const posts = await response.json();
 
                 if (posts.length === 0) {
@@ -307,9 +319,9 @@
                         </div>
                     </div>
                 `).join('');
-                
+
                 feather.replace();
-                
+
             } catch (error) {
                 console.error('Erro ao carregar posts:', error);
                 postsList.innerHTML = `
@@ -355,8 +367,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
