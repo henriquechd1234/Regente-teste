@@ -36,6 +36,33 @@
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
+        
+        /* Estilos para o sistema de comentários */
+        .comments-section {
+            transition: all 0.3s ease;
+        }
+        .comment {
+            border-left: 3px solid #e5e7eb;
+            padding-left: 1rem;
+        }
+        .comment-author {
+            font-weight: 600;
+            color: #4b5563;
+        }
+        .comment-date {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+        .comment-content {
+            margin-top: 0.25rem;
+            color: #4b5563;
+        }
+        .load-more-comments {
+            transition: all 0.3s ease;
+        }
+        .load-more-comments:hover {
+            background-color: #f3f4f6;
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans antialiased">
@@ -63,22 +90,23 @@
                 
                 <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
                 <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
-
+                <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
             </nav>
 
-            <div class="flex items-center">
+            <div class="flex items-center" >
                 <!-- Indicador de usuário -->
+                <a href="login.html"> 
                 <span id="user-indicator" class="text-indigo-900 mr-3 hidden sm:inline">
                     <i data-feather="user" class="w-4 h-4 inline mr-1"></i>
                     <span id="username-display">Visitante</span>
                 </span>
-
+                </a>
                 <!-- Botão Login/Logout -->
                 <a id="login-logout-btn" href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
                     <i data-feather="log-in" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                 </a>
 
-                <a href="enviarpost.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
+                <a href="enviarpost.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4" id="mais">
                     <i data-feather="plus" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                 </a>
 
@@ -96,7 +124,6 @@
                 <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
                 <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
                 <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Historia</a>
-                <a href="enviarpost.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Criar Notícia</a>
             </nav>
         </div>
     </header>
@@ -108,7 +135,7 @@
             <p class="text-gray-600 mb-8">Fique por dentro das últimas novidades e eventos</p>
 
             <!-- Botão Criar Nova Notícia -->
-            <div class="mb-8">
+            <div class="mb-8" id="enviar">
                 <a href="enviarpost.html" class="inline-flex items-center px-6 py-3 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition">
                     <i data-feather="plus" class="w-4 h-4 mr-2"></i>
                     Criar Nova Notícia
@@ -173,19 +200,25 @@
             const userIndicator = document.getElementById('user-indicator');
             const usernameDisplay = document.getElementById('username-display');
             const loginLogoutBtn = document.getElementById('login-logout-btn');
-
+            const enviarPOST = document.getElementById('enviar');
+            const mais = document.getElementById('mais')
             if (currentUser) {
                 userIndicator.classList.remove('hidden');
                 usernameDisplay.textContent = currentUser.nome;
                 loginLogoutBtn.innerHTML = '<i data-feather="log-out" class="w-5 h-5 sm:w-6 sm:h-6"></i>';
                 loginLogoutBtn.href = 'javascript:void(0)';
                 loginLogoutBtn.onclick = logout;
+                enviarPOST.classList.remove('hidden')
+                mais.classList.remove('hidden')
             } else {
-                userIndicator.classList.add('hidden');
+                userIndicator.classList.remove('hidden');
                 usernameDisplay.textContent = 'Visitante';
                 loginLogoutBtn.innerHTML = '<i data-feather="log-in" class="w-5 h-5 sm:w-6 sm:h-6"></i>';
                 loginLogoutBtn.href = 'login.html';
                 loginLogoutBtn.onclick = null;
+                enviarPOST.classList.add('hidden')
+                loginLogoutBtn.classList.add('hidden')
+                mais.classList.add('hidden')
             }
             feather.replace();
         }
@@ -255,6 +288,167 @@
             }
         }
 
+        // ✅ SISTEMA DE COMENTÁRIOS
+        // Variáveis para controle de exibição de comentários
+        const commentsPerLoad = 10;
+        const initialComments = 5;
+
+        // Função para carregar comentários de um post
+        async function carregarComentarios(postId, commentsContainer, loadMoreBtn, noMoreComments, currentDisplay) {
+            try {
+                const response = await fetch(`/api/posts/${postId}/comentarios`, {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar comentários');
+                }
+
+                const comentarios = await response.json();
+
+                if (comentarios.length === 0) {
+                    commentsContainer.innerHTML = `
+                        <div class="text-center py-4 text-gray-500">
+                            <i data-feather="message-circle" class="w-6 h-6 mx-auto mb-2"></i>
+                            <p>Nenhum comentário ainda. Seja o primeiro a comentar!</p>
+                        </div>
+                    `;
+                    feather.replace();
+                    return;
+                }
+
+                // Exibir apenas os comentários até o limite atual
+                const comentariosToShow = comentarios.slice(0, currentDisplay);
+
+                commentsContainer.innerHTML = comentariosToShow.map(comentario => `
+                    <div class="comment mb-4">
+                        <div class="flex justify-between items-start">
+                            <span class="comment-author">${escapeHtml(comentario.autor)}</span>
+                            <span class="comment-date">${formatarData(comentario.data_criacao)}</span>
+                        </div>
+                        <div class="comment-content">${escapeHtml(comentario.conteudo)}</div>
+                    </div>
+                `).join('');
+
+                // Verificar se há mais comentários para carregar
+                if (currentDisplay >= comentarios.length) {
+                    loadMoreBtn.style.display = 'none';
+                    noMoreComments.style.display = 'block';
+                } else {
+                    loadMoreBtn.style.display = 'block';
+                    noMoreComments.style.display = 'none';
+                }
+
+                feather.replace();
+
+            } catch (error) {
+                console.error('Erro ao carregar comentários:', error);
+                commentsContainer.innerHTML = `
+                    <div class="text-center py-4 text-red-500">
+                        <i data-feather="alert-triangle" class="w-6 h-6 mx-auto mb-2"></i>
+                        <p>Erro ao carregar comentários.</p>
+                    </div>
+                `;
+                feather.replace();
+            }
+        }
+
+        // Função para adicionar um novo comentário
+        async function adicionarComentario(postId, comentarioInput) {
+            if (!currentUser) {
+                alert('Você precisa fazer login para comentar.');
+                window.location.href = 'login.html';
+                return false;
+            }
+
+            const conteudo = comentarioInput.value.trim();
+            if (!conteudo) {
+                alert('Por favor, digite um comentário.');
+                return false;
+            }
+
+            try {
+                const response = await fetch(`/api/posts/${postId}/comentarios`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ conteudo })
+                });
+
+                if (response.status === 401) {
+                    currentUser = null;
+                    updateUserUI();
+                    alert('Sessão expirada. Faça login novamente.');
+                    window.location.href = 'login.html';
+                    return false;
+                }
+
+                if (!response.ok) {
+                    throw new Error('Erro ao adicionar comentário');
+                }
+
+                // Limpar campo de entrada
+                comentarioInput.value = '';
+
+                // Recarregar comentários
+                const commentsSection = document.querySelector(`.comments-section[data-post-id="${postId}"]`);
+                const commentsContainer = commentsSection.querySelector('.comments-container');
+                const loadMoreBtn = commentsSection.querySelector('.load-more-comments');
+                const noMoreComments = commentsSection.querySelector('.no-more-comments');
+                const currentDisplay = parseInt(commentsSection.dataset.currentDisplay);
+
+                await carregarComentarios(postId, commentsContainer, loadMoreBtn, noMoreComments, currentDisplay);
+
+                return true;
+
+            } catch (error) {
+                console.error('Erro ao adicionar comentário:', error);
+                alert('Erro ao adicionar comentário. Tente novamente.');
+                return false;
+            }
+        }
+
+        // Função para alternar a exibição da seção de comentários
+        function toggleComentarios(postId) {
+            const commentsSection = document.querySelector(`.comments-section[data-post-id="${postId}"]`);
+            const isHidden = commentsSection.classList.contains('hidden');
+
+            if (isHidden) {
+                commentsSection.classList.remove('hidden');
+                // Carregar comentários se ainda não foram carregados
+                if (commentsSection.dataset.loaded !== 'true') {
+                    const commentsContainer = commentsSection.querySelector('.comments-container');
+                    const loadMoreBtn = commentsSection.querySelector('.load-more-comments');
+                    const noMoreComments = commentsSection.querySelector('.no-more-comments');
+                    const currentDisplay = initialComments;
+                    
+                    commentsSection.dataset.currentDisplay = currentDisplay;
+                    commentsSection.dataset.loaded = 'true';
+                    
+                    carregarComentarios(postId, commentsContainer, loadMoreBtn, noMoreComments, currentDisplay);
+                }
+            } else {
+                commentsSection.classList.add('hidden');
+            }
+        }
+
+        // Função para carregar mais comentários
+        function carregarMaisComentarios(postId) {
+            const commentsSection = document.querySelector(`.comments-section[data-post-id="${postId}"]`);
+            const commentsContainer = commentsSection.querySelector('.comments-container');
+            const loadMoreBtn = commentsSection.querySelector('.load-more-comments');
+            const noMoreComments = commentsSection.querySelector('.no-more-comments');
+            let currentDisplay = parseInt(commentsSection.dataset.currentDisplay);
+
+            currentDisplay += commentsPerLoad;
+            commentsSection.dataset.currentDisplay = currentDisplay;
+
+            carregarComentarios(postId, commentsContainer, loadMoreBtn, noMoreComments, currentDisplay);
+        }
+    
+
         // ✅ CARREGAR POSTS
         async function carregarPosts() {
             const postsList = document.getElementById('postsList');
@@ -312,10 +506,50 @@
                                     <i data-feather="heart" class="w-4 h-4 ${post.usuario_curtiu ? 'fill-current' : ''}"></i>
                                     <span class="like-count" data-post-id="${post.id}">${post.curtidas_count}</span>
                                 </button>
+                                
+                                <!-- Botão de Comentários -->
+                                <button class="flex items-center space-x-1 text-gray-500 hover:text-indigo-600 transition-colors"
+                                        onclick="toggleComentarios(${post.id})">
+                                    <i data-feather="message-circle" class="w-4 h-4"></i>
+                                    <span>Comentários</span>
+                                </button>
                             </div>
-                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
-                                Post #${post.id}
-                            </span>
+                        </div>
+                        
+                        <!-- Seção de Comentários (inicialmente oculta) -->
+                        <div class="comments-section hidden mt-4 pt-4 border-t" data-post-id="${post.id}" data-loaded="false" data-current-display="${initialComments}">
+                            <h4 class="font-semibold text-gray-700 mb-3">Comentários</h4>
+                            
+                            <!-- Formulário para adicionar comentário -->
+                            <div class="mb-4">
+                                <textarea class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                          placeholder="Escreva seu comentário..." rows="2"></textarea>
+                                <div class="mt-2 flex justify-end">
+                                    <button class="px-4 py-2 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition"
+                                            onclick="adicionarComentario(${post.id}, this.previousElementSibling)">
+                                        Enviar Comentário
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Container para os comentários -->
+                            <div class="comments-container mb-4">
+                                <div class="flex justify-center items-center py-4">
+                                    <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-indigo-900"></div>
+                                    <span class="ml-2 text-gray-600">Carregando comentários...</span>
+                                </div>
+                                <div class="text-center">
+                                    <button class="load-more-comments px-4 py-2 text-indigo-900 rounded-lg hover:bg-gray-100 transition"
+                                            onclick="carregarMaisComentarios(${post.id})">
+                                        Carregar mais comentários
+                                    </button>
+                            </div>
+                            
+                            <!-- Botão para carregar mais comentários -->
+                                <div class="no-more-comments text-gray-500 mt-2" style="display: none;">
+                                    Não há mais comentários para carregar.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `).join('');
@@ -367,5 +601,3 @@
     </script>
 </body>
 </html>
-
-
