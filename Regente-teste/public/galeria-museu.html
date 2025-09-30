@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galeria do Museu - Colégio Regente Feijó</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Header -->
+  <header class="fixed w-full bg-white shadow-md z-50">
+    <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+      <div class="flex items-center">
+        <img src="CERF.jpg" alt="Logo Colégio Regente Feijó" 
+             class="h-10 sm:h-12 md:h-14 lg:h-16 w-auto">
+        <span class="ml-2 sm:ml-3 text-lg sm:text-xl md:text-2xl font-bold text-indigo-900 hidden md:block">
+          Colégio Regente Feijó
+        </span>
+      </div>
+
+      <!-- Desktop Menu -->
+      <nav class="hidden md:flex space-x-6 lg:space-x-8">
+        <a href="index.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Início</a>
+        <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
+           class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+        <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+        <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+        <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+      </nav>
+
+      <!-- Ícones -->
+      <div class="flex items-center">
+        <a href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
+          <i data-feather="user" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+        </a>
+        <button class="md:hidden focus:outline-none" id="mobile-menu-button">
+          <i data-feather="menu" class="w-6 h-6 text-indigo-900"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
+      <nav class="flex flex-col space-y-4 px-6 py-4 text-center">
+        <a href="index.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Início</a>
+        <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
+           class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+        <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+        <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+        <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section Galeria -->
+  <section class="pt-28 sm:pt-32 pb-16 sm:pb-20 bg-indigo-900 text-white">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Galeria do Museu</h1>
+      <p class="text-lg sm:text-xl text-indigo-100 max-w-2xl mx-auto">
+        Conheça nosso acervo histórico através de imagens que contam a trajetória do Colégio Regente Feijó
+      </p>
+    </div>
+  </section>
+
+  <!-- Galeria de Fotos -->
+  <section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Galeria -->
+        <div class="relative group rounded-lg overflow-hidden shadow-lg">
+          <img src="fotos\fotos-regente\fotosmuseu\IMG-20250929-WA0061.jpg" alt="Museu Principal" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <p class="text-white text-center px-4">Entrada Principal do Museu</p>
+          </div>
+        </div>
+
+        <div class="relative group rounded-lg overflow-hidden shadow-lg">
+          <img src="fotos\fotos-regente\fotosmuseu\IMG-20250929-WA0062.jpg" alt="Espaço Expositivo" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <p class="text-white text-center px-4">Sala de Exposições Permanentes</p>
+          </div>
+        </div>
+
+        <div class="relative group rounded-lg overflow-hidden shadow-lg">
+          <img src="fotos\fotos-regente\fotosmuseu\IMG-20250929-WA0063.jpg" alt="Vitrine Histórica" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <p class="text-white text-center px-4">Vitrine com Objetos Históricos</p>
+          </div>
+        </div>
+
+        <div class="relative group rounded-lg overflow-hidden shadow-lg">
+          <img src="fotos\fotos-regente\fotosmuseu\IMG-20250929-WA0064.jpg" alt="Acervo Documental" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <p class="text-white text-center px-4">Arquivo de Documentos Históricos</p>
+          </div>
+        </div>
+
+        <div class="relative group rounded-lg overflow-hidden shadow-lg">
+          <img src="fotos\fotos-regente\fotosmuseu\IMG-20250929-WA0065.jpg" alt="Móveis Antigos" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <p class="text-white text-center px-4">Mobiliário Original da Escola</p>
+          </div>
+        </div>
+
+        <div class="relative group rounded-lg overflow-hidden shadow-lg">
+          <img src="fotos\fotos-regente\fotosmuseu\IMG-20250929-WA0066.jpg" alt="Painel Fotográfico" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <p class="text-white text-center px-4">Painel de Memórias Fotográficas</p>
+          </div>
+        </div>
+
+        <div class="relative group rounded-lg overflow-hidden shadow-lg">
+          <img src="fotos\fotos-regente\fotosmuseu\IMG-20250929-WA0067.jpg" alt="Material Didático" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <p class="text-white text-center px-4">Coleção de Materiais Didáticos Antigos</p>
+          </div>
+        </div>
+
+        <div class="relative group rounded-lg overflow-hidden shadow-lg">
+          <img src="fotos\fotos-regente\fotosmuseu\IMG-20250929-WA0068.jpg" alt="Uniformes" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <p class="text-white text-center px-4">Evolução dos Uniformes Escolares</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Agendamento -->
+  <section class="py-16 bg-indigo-900 text-white text-center">
+    <div class="container mx-auto px-4">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-4">Quer ver tudo de perto?</h2>
+      <p class="max-w-xl mx-auto mb-8 text-indigo-100">
+        Agende uma visita guiada ao nosso museu e vivencie a história do Colégio Regente Feijó
+      </p>
+      <a href="agendar-visita.html" 
+         class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition-colors inline-flex items-center gap-2">
+        <i data-feather="calendar" class="w-5 h-5"></i>
+        Agendar Visita ao Museu
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-indigo-900 text-white py-8 text-center">
+    <div class="container mx-auto px-4">
+      <p class="text-sm sm:text-base">&copy; 2025 Colégio Regente Feijó. Todos os direitos reservados.</p>
+      <div class="mt-4">
+        <a href="index.html" class="text-indigo-200 hover:text-white transition-colors mx-2">Início</a>
+        <a href="index.html#museu" class="text-indigo-200 hover:text-white transition-colors mx-2">Museu</a>
+        <a href="agendar-visita.html" class="text-indigo-200 hover:text-white transition-colors mx-2">Visitas</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    feather.replace();
+
+    // Menu Mobile Toggle
+    const btn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
+
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>

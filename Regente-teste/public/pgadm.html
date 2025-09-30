@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração - Colégio Regente Feijó</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <!-- Header -->
+    <header class="fixed w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+          <div class="flex items-center">
+            <img src="CERF.jpg" alt="Logo Colégio Regente Feijó" 
+                 class="h-10 sm:h-12 md:h-14 lg:h-16 w-auto">
+            <span class="ml-2 sm:ml-3 text-lg sm:text-xl md:text-2xl font-bold text-indigo-900 hidden md:block">
+              Colégio Regente Feijó
+            </span>
+          </div>
+    
+          <nav class="hidden md:flex space-x-6 lg:space-x-8">
+            <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+            <a href="index.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+            <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+            <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+            <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
+            <a href="historiaregente.html#historia" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
+          </nav>
+    
+          <div class="flex items-center">
+            <a href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
+              <i data-feather="user" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </a>
+            <button class="md:hidden focus:outline-none" id="mobile-menu-button">
+              <i data-feather="menu" class="w-6 h-6 text-indigo-900"></i>
+            </button>
+          </div>
+        </div>
+    
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
+          <nav class="flex flex-col space-y-4 px-6 py-4 text-center">
+            <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+            <a href="index.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+            <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+            <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+            <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
+            <a href="historiaregente.html#historia" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
+          </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8 pt-28">
+        <div class="max-w-6xl mx-auto">
+            <!-- Cabeçalho do Curso -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                <div class="bg-indigo-900 text-white p-8 text-center relative">
+                    <div class="absolute inset-0 bg-black opacity-20"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-center mb-4">
+                            <i data-feather="briefcase" class="w-16 h-16"></i>
+                        </div>
+                        <h1 class="text-3xl font-bold mb-2">Curso Técnico em Administração</h1>
+                        <p class="text-indigo-100">Formação profissional para atuar na gestão de organizações</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Galeria de Imagens -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                <h2 class="text-xl font-bold text-indigo-900 mb-4">Galeria do Curso</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="rounded-lg overflow-hidden shadow-md">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                             alt="Aula de Administração" class="w-full h-48 object-cover hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-md">
+                        <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                             alt="Laboratório de Gestão" class="w-full h-48 object-cover hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-md">
+                        <img src="https://images.unsplash.com/photo-1565688534245-05d6b5be184a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                             alt="Alunos em atividade" class="w-full h-48 object-cover hover:scale-105 transition duration-300">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informações do Curso -->
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-indigo-900 mb-4">Sobre o Curso</h2>
+                    <p class="text-gray-600 mb-4">
+                        O curso técnico em Administração prepara profissionais para atuar na gestão de 
+                        empresas, com habilidades em planejamento, organização, direção e controle 
+                        das atividades organizacionais.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <i data-feather="clock" class="w-5 h-5 text-indigo-600 mr-2"></i>
+                            <span class="text-gray-700">Duração: 34 meses</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="users" class="w-5 h-5 text-indigo-600 mr-2"></i>
+                            <span class="text-gray-700">Modalidade: Presencial</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="book" class="w-5 h-5 text-indigo-600 mr-2"></i>
+                            <span class="text-gray-700">Carga Horária: 1200 horas</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="dollar-sign" class="w-5 h-5 text-indigo-600 mr-2"></i>
+                            <span class="text-gray-700">Investimento: R$ 0/mês</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-indigo-900 mb-4">Mercado de Trabalho</h2>
+                    <p class="text-gray-600 mb-4">
+                        O técnico em Administração pode atuar em diversos setores como:
+                    </p>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li>Departamentos administrativos</li>
+                        <li>Recursos humanos</li>
+                        <li>Compras e vendas</li>
+                        <li>Controle de estoque</li>
+                        <li>Atendimento ao cliente</li>
+                        <li>Gestão de pequenos negócios</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Grade Curricular -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                <h2 class="text-xl font-bold text-indigo-900 mb-4">Grade Curricular</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+                            <i data-feather="book-open" class="w-4 h-4 mr-2 text-indigo-600"></i>
+                            1º ano
+                        </h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li>Fundamentos da Administração</li>
+                            <li>Matemática Financeira</li>
+                            <li>Contabilidade Básica</li>
+                            <li>Informática Aplicada</li>
+                            <li>Comunicação Empresarial</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+                            <i data-feather="book-open" class="w-4 h-4 mr-2 text-indigo-600"></i>
+                            2º ano
+                        </h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li>Gestão de Pessoas</li>
+                            <li>Marketing Empresarial</li>
+                            <li>Gestão Financeira</li>
+                            <li>Logística</li>
+                            <li>Empreendedorismo</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+                            <i data-feather="book-open" class="w-4 h-4 mr-2 text-indigo-600"></i>
+                            3º ano
+                        </h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li>Gestão de Qualidade</li>
+                            <li>Projeto Integrador</li>
+                            <li>Estágio Supervisionado</li>
+                            <li>Ética Profissional</li>
+                            <li>Plano de Negócios</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="text-center bg-white rounded-xl shadow-md p-8">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-4">Pronto para começar sua jornada?</h2>
+                <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+                    Junte-se a centenas de alunos que já transformaram suas carreiras com nosso curso técnico em Administração.
+                </p>
+                <a href="index.html#contato">
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all transform hover:scale-105">
+                            Entre em contato!
+                        </button>
+                </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-900 text-white py-6 sm:py-8 text-center">
+        <p class="text-sm sm:text-base">&copy; 2025 Colégio Regente Feijó. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        feather.replace();
+
+        const btn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Post - Colégio Regente Feijó</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .editor-toolbar {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem 0.5rem 0 0;
+            background-color: #f8fafc;
+        }
+        .editor-content {
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+            min-height: 200px;
+        }
+        .image-preview {
+            transition: all 0.3s ease;
+        }
+        .image-preview:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <!-- Header -->
+    <header class="fixed w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+          <div class="flex items-center">
+            <img src="CERF.jpg" alt="Logo Colégio Regente Feijó" 
+                 class="h-10 sm:h-12 md:h-14 lg:h-16 w-auto">
+            <span class="ml-2 sm:ml-3 text-lg sm:text-xl md:text-2xl font-bold text-indigo-900 hidden md:block">
+              Colégio Regente Feijó
+            </span>
+          </div>
+    
+          <!-- Desktop Menu -->
+          <nav class="hidden md:flex space-x-6 lg:space-x-8">
+            <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+            <a href="index.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+            <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+            <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+            <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
+            <a href="historiaregente.html#historia" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
+          </nav>
+    
+          <!-- Ícones -->
+          <div class="flex items-center">
+            <a href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
+              <i data-feather="user" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </a>
+            <button class="md:hidden focus:outline-none" id="mobile-menu-button">
+              <i data-feather="menu" class="w-6 h-6 text-indigo-900"></i>
+            </button>
+          </div>
+        </div>
+    
+        <!-- Mobile Menu (inicialmente escondido) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
+          <nav class="flex flex-col space-y-4 px-6 py-4 text-center">
+            <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
+            <a href="index.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">A Escola</a>
+            <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+            <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
+            <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Contato</a>
+            <a href="historiaregente.html#historia" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
+          </nav>
+        </div>
+    </header>
+
+    <!-- Toast Message -->
+    <div id="toast" class="toast hidden">
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8 pt-28">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-indigo-900 mb-8">Criar Nova Notícia</h2>
+            
+            <!-- Post Form -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden p-6 mb-8">
+                <div class="mb-6">
+                    <label for="titulo" class="block text-sm font-medium text-gray-700 mb-2">Título</label>
+                    <input type="text" id="titulo" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Digite o título da notícia">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="conteudo" class="block text-sm font-medium text-gray-700 mb-2">Conteúdo</label>
+                    <div class="editor-toolbar p-2 flex space-x-2">
+                        <button type="button" class="p-2 hover:bg-gray-200 rounded" onclick="formatText('bold')"><i data-feather="bold" class="w-4 h-4"></i></button>
+                        <button type="button" class="p-2 hover:bg-gray-200 rounded" onclick="formatText('italic')"><i data-feather="italic" class="w-4 h-4"></i></button>
+                        <button type="button" class="p-2 hover:bg-gray-200 rounded" onclick="formatText('insertUnorderedList')"><i data-feather="list" class="w-4 h-4"></i></button>
+                    </div>
+                    <div id="conteudo" class="editor-content p-4" contenteditable="true"></div>
+                </div>
+                
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Imagem de Destaque</label>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i data-feather="upload" class="w-12 h-12 text-gray-400 mb-3"></i>
+                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Clique para fazer upload</span> ou arraste e solte</p>
+                                <p class="text-xs text-gray-500">PNG, JPG ou GIF (MÁX. 5MB)</p>
+                            </div>
+                            <input id="dropzone-file" type="file" class="hidden" accept="image/*" />
+                        </label>
+                    </div>
+                    
+                    <!-- Image Preview -->
+                    <div id="image-preview-container" class="mt-4 hidden">
+                        <p class="text-sm font-medium text-gray-700 mb-2">Prévia:</p>
+                        <div class="image-preview w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+                            <img id="image-preview" src="#" alt="Prévia" class="w-full h-full object-cover">
+                        </div>
+                        <button type="button" onclick="removerImagem()" class="mt-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">Remover Imagem</button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition" onclick="limparFormulario()">Cancelar</button>
+                    <button type="button" class="px-6 py-2 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition" onclick="criarPost()">Publicar Notícia</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-900 text-white py-6 sm:py-8 text-center">
+        <p class="text-sm sm:text-base">&copy; 2025 Colégio Regente Feijó. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        feather.replace();
+
+        // Menu Mobile Toggle
+        const btn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+        
+        // Image preview functionality
+        const dropzoneFile = document.getElementById('dropzone-file');
+        const imagePreview = document.getElementById('image-preview');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        
+        dropzoneFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Verificar tamanho do arquivo
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('A imagem deve ter no máximo 5MB', 'error');
+                    this.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    imagePreviewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Funções de formatação de texto
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            document.getElementById('conteudo').focus();
+        }
+
+        function limparFormulario() {
+            document.getElementById('titulo').value = '';
+            document.getElementById('conteudo').innerHTML = '';
+            document.getElementById('dropzone-file').value = '';
+            imagePreviewContainer.classList.add('hidden');
+        }
+
+        function removerImagem() {
+            document.getElementById('dropzone-file').value = '';
+            imagePreviewContainer.classList.add('hidden');
+        }
+
+      // ✅ FUNÇÃO CORRIGIDA - criarPost
+async function criarPost() {
+    const titulo = document.getElementById('titulo').value;
+    const conteudo = document.getElementById('conteudo').innerHTML;
+    const fileInput = document.getElementById('dropzone-file');
+
+    // Validação dos campos obrigatórios
+    if (!titulo.trim()) {
+        showToast('Por favor, preencha o título!', 'error');
+        return;
+    }
+
+    if (!conteudo.trim() || conteudo === '<br>') {
+        showToast('Por favor, preencha o conteúdo!', 'error');
+        return;
+    }
+
+    try {
+        let imagem_base64 = null;
+        
+        // Converter imagem para Base64 se existir
+        if (fileInput.files[0]) {
+            // Validar tamanho (5MB máximo)
+            if (fileInput.files[0].size > 5 * 1024 * 1024) {
+                showToast('A imagem deve ter no máximo 5MB', 'error');
+                return;
+            }
+            
+            imagem_base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(fileInput.files[0]);
+            });
+        }
+
+        // ✅ AGORA ENVIA JSON (correto!)
+        const response = await fetch('/api/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // ← IMPORTANTE!
+            },
+            body: JSON.stringify({
+                titulo: titulo,
+                conteudo: conteudo,
+                imagem_base64: imagem_base64  // ← Nome que o backend espera
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast('Notícia publicada com sucesso!', 'success');
+            limparFormulario();
+        } else {
+            showToast(data.error || 'Erro ao publicar notícia', 'error');
+        }
+    } catch (error) {
+        showToast('Erro ao conectar com o servidor', 'error');
+        console.error('Erro:', error);
+    }
+}
+
+        // Função para mostrar toast messages
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            // Configurar cor baseada no tipo
+            if (type === 'error') {
+                toast.querySelector('div').classList.remove('bg-green-500');
+                toast.querySelector('div').classList.add('bg-red-500');
+            } else {
+                toast.querySelector('div').classList.remove('bg-red-500');
+                toast.querySelector('div').classList.add('bg-green-500');
+            }
+            
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            
+            // Auto-esconder após 5 segundos
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Carregar feather icons quando necessário
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace();
+        });
+    </script>
+</body>
+</html>
+
