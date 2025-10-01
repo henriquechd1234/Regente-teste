@@ -68,38 +68,30 @@
 <body class="bg-gray-50 font-sans antialiased">
     <!-- Header -->
     <header class="fixed w-full bg-white shadow-md z-50">
-      <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-
+        <div class="container mx-auto px-4 py-2 flex justify-between items-center">
             <div class="flex items-center">
-
                 <img src="CERF.jpg" alt="Logo Colégio Regente Feijó" 
-
                      class="h-10 sm:h-12 md:h-14 lg:h-16 w-auto">
-
                 <span class="ml-2 sm:ml-3 text-lg sm:text-xl md:text-2xl font-bold text-indigo-900 hidden md:block">
-
                     Colégio Regente Feijó
-
                 </span>
-
             </div>
 
             <nav class="hidden md:flex space-x-6 lg:space-x-8">
                 <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
                    class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
-                
                 <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
                 <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
                 <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
             </nav>
 
-            <div class="flex items-center" >
+            <div class="flex items-center">
                 <!-- Indicador de usuário -->
                 <a href="login.html"> 
-                <span id="user-indicator" class="text-indigo-900 mr-3 hidden sm:inline">
-                    <i data-feather="user" class="w-4 h-4 inline mr-1"></i>
-                    <span id="username-display">Visitante</span>
-                </span>
+                    <span id="user-indicator" class="text-indigo-900 mr-3 hidden sm:inline">
+                        <i data-feather="user" class="w-4 h-4 inline mr-1"></i>
+                        <span id="username-display">Visitante</span>
+                    </span>
                 </a>
                 <!-- Botão Login/Logout -->
                 <a id="login-logout-btn" href="login.html" class="text-indigo-900 hover:text-indigo-600 mr-3 sm:mr-4">
@@ -120,10 +112,9 @@
             <nav class="flex flex-col space-y-4 px-6 py-4 text-center">
                 <a href="https://www.areadoaluno.seed.pr.gov.br/servicosaoaluno/pages/publico/login.jsf" 
                    class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Área do Aluno</a>
-                
                 <a href="index.html#cursos" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
                 <a href="posts.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Notícias</a>
-                <a href="index.html#contato" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">Historia</a>
+                <a href="historiaregente.html" class="text-indigo-900 hover:text-indigo-600 font-medium transition-colors">História</a>
             </nav>
         </div>
     </header>
@@ -158,6 +149,11 @@
     </footer>
 
     <script>
+        // ✅ VARIÁVEIS GLOBAIS
+        let currentUser = null;
+        const commentsPerLoad = 10;
+        const initialComments = 5;
+
         feather.replace();
 
         // Menu Mobile Toggle
@@ -168,10 +164,7 @@
             menu.classList.toggle('hidden');
         });
 
-        // ✅ SISTEMA DE AUTENTICAÇÃO E CURTIDAS
-        let currentUser = null;
-
-        // Verificar se usuário está logado
+        // ✅ SISTEMA DE AUTENTICAÇÃO
         async function checkAuth() {
             try {
                 const response = await fetch('/api/user-info', {
@@ -195,35 +188,35 @@
             return false;
         }
 
-        // Atualizar UI com informações do usuário
         function updateUserUI() {
             const userIndicator = document.getElementById('user-indicator');
             const usernameDisplay = document.getElementById('username-display');
             const loginLogoutBtn = document.getElementById('login-logout-btn');
             const enviarPOST = document.getElementById('enviar');
-            const mais = document.getElementById('mais')
+            const mais = document.getElementById('mais');
+            
             if (currentUser) {
                 userIndicator.classList.remove('hidden');
                 usernameDisplay.textContent = currentUser.nome;
                 loginLogoutBtn.innerHTML = '<i data-feather="log-out" class="w-5 h-5 sm:w-6 sm:h-6"></i>';
                 loginLogoutBtn.href = 'javascript:void(0)';
                 loginLogoutBtn.onclick = logout;
-                enviarPOST.classList.remove('hidden')
-                mais.classList.remove('hidden')
+                enviarPOST.classList.remove('hidden');
+                mais.classList.remove('hidden');
+                loginLogoutBtn.classList.remove('hidden');
             } else {
                 userIndicator.classList.remove('hidden');
                 usernameDisplay.textContent = 'Visitante';
                 loginLogoutBtn.innerHTML = '<i data-feather="log-in" class="w-5 h-5 sm:w-6 sm:h-6"></i>';
                 loginLogoutBtn.href = 'login.html';
                 loginLogoutBtn.onclick = null;
-                enviarPOST.classList.add('hidden')
-                loginLogoutBtn.classList.add('hidden')
-                mais.classList.add('hidden')
+                enviarPOST.classList.add('hidden');
+                mais.classList.add('hidden');
+                loginLogoutBtn.classList.remove('hidden');
             }
             feather.replace();
         }
 
-        // ✅ LOGOUT
         async function logout() {
             try {
                 const response = await fetch('/api/logout', {
@@ -289,22 +282,24 @@
         }
 
         // ✅ SISTEMA DE COMENTÁRIOS
-        // Variáveis para controle de exibição de comentários
-        const commentsPerLoad = 10;
-        const initialComments = 5;
-
-        // Função para carregar comentários de um post
         async function carregarComentarios(postId, commentsContainer, loadMoreBtn, noMoreComments, currentDisplay) {
             try {
+                console.log(`🔍 Carregando comentários para post ${postId}, mostrando ${currentDisplay}`);
+
                 const response = await fetch(`/api/posts/${postId}/comentarios`, {
                     credentials: 'include'
                 });
 
+                
+
                 if (!response.ok) {
-                    throw new Error('Erro ao carregar comentários');
+                    const errorText = await response.text();
+                    console.error('❌ Erro na resposta:', errorText);
+                    throw new Error(`Erro ${response.status} ao carregar comentários`);
                 }
 
                 const comentarios = await response.json();
+                console.log(`📊 Comentários recebidos:`, comentarios);
 
                 if (comentarios.length === 0) {
                     commentsContainer.innerHTML = `
@@ -342,32 +337,51 @@
                 feather.replace();
 
             } catch (error) {
-                console.error('Erro ao carregar comentários:', error);
+                console.error('❌ Erro ao carregar comentários:', error);
                 commentsContainer.innerHTML = `
                     <div class="text-center py-4 text-red-500">
                         <i data-feather="alert-triangle" class="w-6 h-6 mx-auto mb-2"></i>
                         <p>Erro ao carregar comentários.</p>
+                        <p class="text-sm">${error.message}</p>
+                        <button onclick="carregarComentarios(${postId}, this.parentElement.parentElement, this.parentElement.parentElement.querySelector('.load-more-comments'), this.parentElement.parentElement.querySelector('.no-more-comments'), ${currentDisplay})" 
+                                class="mt-2 px-3 py-1 bg-red-500 text-white rounded text-sm">
+                            Tentar Novamente
+                        </button>
                     </div>
                 `;
                 feather.replace();
             }
         }
 
-        // Função para adicionar um novo comentário
-        async function adicionarComentario(postId, comentarioInput) {
+        async function adicionarComentario(postId, buttonElement) {
             if (!currentUser) {
                 alert('Você precisa fazer login para comentar.');
                 window.location.href = 'login.html';
                 return false;
             }
 
-            const conteudo = comentarioInput.value.trim();
+            const commentsSection = document.querySelector(`.comments-section[data-post-id="${postId}"]`);
+            const textarea = commentsSection.querySelector('textarea');
+            
+            if (!textarea) {
+                console.error('Textarea não encontrado para o post:', postId);
+                alert('Erro ao encontrar campo de comentário.');
+                return false;
+            }
+
+            const conteudo = textarea.value.trim();
             if (!conteudo) {
                 alert('Por favor, digite um comentário.');
                 return false;
             }
 
             try {
+                // Mostrar loading no botão
+                const originalText = buttonElement.textContent;
+                buttonElement.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i> Enviando...';
+                buttonElement.disabled = true;
+                feather.replace();
+
                 const response = await fetch(`/api/posts/${postId}/comentarios`, {
                     method: 'POST',
                     headers: {
@@ -376,6 +390,11 @@
                     credentials: 'include',
                     body: JSON.stringify({ conteudo })
                 });
+
+                // Restaurar botão
+                buttonElement.innerHTML = originalText;
+                buttonElement.disabled = false;
+                feather.replace();
 
                 if (response.status === 401) {
                     currentUser = null;
@@ -386,14 +405,21 @@
                 }
 
                 if (!response.ok) {
-                    throw new Error('Erro ao adicionar comentário');
+                    const errorText = await response.text();
+                    console.error('❌ Erro do servidor:', errorText);
+                    throw new Error(`Erro ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Erro ao adicionar comentário');
                 }
 
                 // Limpar campo de entrada
-                comentarioInput.value = '';
+                textarea.value = '';
 
                 // Recarregar comentários
-                const commentsSection = document.querySelector(`.comments-section[data-post-id="${postId}"]`);
                 const commentsContainer = commentsSection.querySelector('.comments-container');
                 const loadMoreBtn = commentsSection.querySelector('.load-more-comments');
                 const noMoreComments = commentsSection.querySelector('.no-more-comments');
@@ -404,13 +430,18 @@
                 return true;
 
             } catch (error) {
-                console.error('Erro ao adicionar comentário:', error);
-                alert('Erro ao adicionar comentário. Tente novamente.');
+                console.error('❌ Erro ao adicionar comentário:', error);
+                alert(error.message || 'Erro ao adicionar comentário. Tente novamente.');
+                
+                // Restaurar botão em caso de erro
+                buttonElement.innerHTML = 'Enviar Comentário';
+                buttonElement.disabled = false;
+                feather.replace();
+                
                 return false;
             }
         }
 
-        // Função para alternar a exibição da seção de comentários
         function toggleComentarios(postId) {
             const commentsSection = document.querySelector(`.comments-section[data-post-id="${postId}"]`);
             const isHidden = commentsSection.classList.contains('hidden');
@@ -434,7 +465,6 @@
             }
         }
 
-        // Função para carregar mais comentários
         function carregarMaisComentarios(postId) {
             const commentsSection = document.querySelector(`.comments-section[data-post-id="${postId}"]`);
             const commentsContainer = commentsSection.querySelector('.comments-container');
@@ -447,129 +477,130 @@
 
             carregarComentarios(postId, commentsContainer, loadMoreBtn, noMoreComments, currentDisplay);
         }
-    
 
-        // ✅ CARREGAR POSTS
-        async function carregarPosts() {
-            const postsList = document.getElementById('postsList');
+        // ✅ CARREGAR POSTS - VERSÃO COM CONTAGEM DE COMENTÁRIOS
+async function carregarPosts() {
+    const postsList = document.getElementById('postsList');
 
-            try {
-                const response = await fetch('/api/posts', {
-                    credentials: 'include'
-                });
+    try {
+        const response = await fetch('/api/posts', {
+            credentials: 'include'
+        });
 
-                if (!response.ok) {
-                    throw new Error('Erro ao carregar posts');
-                }
+        if (!response.ok) {
+            throw new Error('Erro ao carregar posts');
+        }
 
-                const posts = await response.json();
+        const posts = await response.json();
 
-                if (posts.length === 0) {
-                    postsList.innerHTML = `
-                        <div class="text-center py-12 bg-white rounded-lg shadow-sm">
-                            <i data-feather="file-text" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
-                            <p class="text-gray-600 text-lg mb-2">Nenhuma notícia publicada ainda.</p>
-                            <a href="enviar.html" class="inline-flex items-center px-4 py-2 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition">
-                                <i data-feather="plus" class="w-4 h-4 mr-2"></i>
-                                Criar Primeira Notícia
-                            </a>
-                        </div>
-                    `;
-                    feather.replace();
-                    return;
-                }
+        if (posts.length === 0) {
+            postsList.innerHTML = `
+                <div class="text-center py-12 bg-white rounded-lg shadow-sm">
+                    <i data-feather="file-text" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+                    <p class="text-gray-600 text-lg mb-2">Nenhuma notícia publicada ainda.</p>
+                    <a href="enviarpost.html" class="inline-flex items-center px-4 py-2 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition">
+                        <i data-feather="plus" class="w-4 h-4 mr-2"></i>
+                        Criar Primeira Notícia
+                    </a>
+                </div>
+            `;
+            feather.replace();
+            return;
+        }
 
-                // Renderizar os posts
-                postsList.innerHTML = posts.map(post => `
-                    <div class="post bg-white rounded-lg shadow-md p-6 mb-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-3">${escapeHtml(post.titulo)}</h3>
-                        
-                        ${post.foto_url ? `
-                            <div class="mb-4">
-                                <img src="${post.foto_url}" alt="${escapeHtml(post.titulo)}" 
-                                     class="w-full h-64 object-cover rounded-lg">
-                            </div>
-                        ` : ''}
-                        
-                        <div class="text-gray-700 mb-4 prose max-w-none">
-                            ${post.conteudo}
-                        </div>
-                        
-                        <div class="flex justify-between items-center text-sm text-gray-500 border-t pt-3">
-                            <div class="flex items-center space-x-4">
-                                <span>Publicado em: ${formatarData(post.data_criacao)}</span>
-                                <!-- Botão de Curtir -->
-                                <button class="like-btn flex items-center space-x-1 ${post.usuario_curtiu ? 'liked' : ''} ${!currentUser ? 'logged-out' : ''}" 
-                                        data-post-id="${post.id}" 
-                                        onclick="toggleLike(${post.id})"
-                                        ${!currentUser ? 'title="Faça login para curtir"' : ''}>
-                                    <i data-feather="heart" class="w-4 h-4 ${post.usuario_curtiu ? 'fill-current' : ''}"></i>
-                                    <span class="like-count" data-post-id="${post.id}">${post.curtidas_count}</span>
-                                </button>
-                                
-                                <!-- Botão de Comentários -->
-                                <button class="flex items-center space-x-1 text-gray-500 hover:text-indigo-600 transition-colors"
-                                        onclick="toggleComentarios(${post.id})">
-                                    <i data-feather="message-circle" class="w-4 h-4"></i>
-                                    <span>Comentários</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Seção de Comentários (inicialmente oculta) -->
-                        <div class="comments-section hidden mt-4 pt-4 border-t" data-post-id="${post.id}" data-loaded="false" data-current-display="${initialComments}">
-                            <h4 class="font-semibold text-gray-700 mb-3">Comentários</h4>
-                            
-                            <!-- Formulário para adicionar comentário -->
-                            <div class="mb-4">
-                                <textarea class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
-                                          placeholder="Escreva seu comentário..." rows="2"></textarea>
-                                <div class="mt-2 flex justify-end">
-                                    <button class="px-4 py-2 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition"
-                                            onclick="adicionarComentario(${post.id}, this.previousElementSibling)">
-                                        Enviar Comentário
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Container para os comentários -->
-                            <div class="comments-container mb-4">
-                                <div class="flex justify-center items-center py-4">
-                                    <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-indigo-900"></div>
-                                    <span class="ml-2 text-gray-600">Carregando comentários...</span>
-                                </div>
-                                <div class="text-center">
-                                    <button class="load-more-comments px-4 py-2 text-indigo-900 rounded-lg hover:bg-gray-100 transition"
-                                            onclick="carregarMaisComentarios(${post.id})">
-                                        Carregar mais comentários
-                                    </button>
-                            </div>
-                            
-                            <!-- Botão para carregar mais comentários -->
-                                <div class="no-more-comments text-gray-500 mt-2" style="display: none;">
-                                    Não há mais comentários para carregar.
-                                </div>
-                            </div>
-                        </div>
+        // Renderizar os posts
+        postsList.innerHTML = posts.map(post => `
+            <div class="post bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-3">${escapeHtml(post.titulo)}</h3>
+                
+                ${post.foto_url ? `
+                    <div class="mb-4">
+                        <img src="${post.foto_url}" alt="${escapeHtml(post.titulo)}" 
+                             class="w-full h-64 object-cover rounded-lg">
                     </div>
-                `).join('');
-
-                feather.replace();
-
-            } catch (error) {
-                console.error('Erro ao carregar posts:', error);
-                postsList.innerHTML = `
-                    <div class="text-center py-8 text-red-600">
-                        <i data-feather="alert-triangle" class="w-16 h-16 mx-auto mb-4"></i>
-                        <p>Erro ao carregar posts. Tente recarregar a página.</p>
-                        <button onclick="carregarPosts()" class="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
-                            Tentar Novamente
+                ` : ''}
+                
+                <div class="text-gray-700 mb-4 prose max-w-none">
+                    ${post.conteudo}
+                </div>
+                
+                <div class="flex justify-between items-center text-sm text-gray-500 border-t pt-3">
+                    <div class="flex items-center space-x-4">
+                        <span>Publicado em: ${formatarData(post.data_criacao)}</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <!-- Botão de Curtir -->
+                        <button class="like-btn flex items-center space-x-1 ${post.usuario_curtiu ? 'liked' : ''} ${!currentUser ? 'logged-out' : ''}" 
+                                data-post-id="${post.id}" 
+                                onclick="toggleLike(${post.id})"
+                                ${!currentUser ? 'title="Faça login para curtir"' : ''}>
+                            <i data-feather="heart" class="w-4 h-4 ${post.usuario_curtiu ? 'fill-current' : ''}"></i>
+                            <span class="like-count" data-post-id="${post.id}">${post.curtidas_count}</span>
+                        </button>
+                        
+                        <!-- Botão de Comentários com Contagem -->
+                        <button class="flex items-center space-x-1 text-gray-500 hover:text-indigo-600 transition-colors"
+                                onclick="toggleComentarios(${post.id})">
+                            <i data-feather="message-circle" class="w-4 h-4"></i>
+                            <span>Comentários (${post.comentarios_count || 0})</span>
                         </button>
                     </div>
-                `;
-                feather.replace();
-            }
-        }
+                </div>
+                
+                <!-- Seção de Comentários (inicialmente oculta) -->
+                <div class="comments-section hidden mt-4 pt-4 border-t" data-post-id="${post.id}" data-loaded="false" data-current-display="${initialComments}">
+                    <h4 class="font-semibold text-gray-700 mb-3">Comentários (${post.comentarios_count || 0})</h4>
+                    
+                    <!-- Formulário para adicionar comentário -->
+                    <div class="mb-4">
+                        <textarea class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                  placeholder="Escreva seu comentário..." rows="2"></textarea>
+                        <div class="mt-2 flex justify-end">
+                            <button class="px-4 py-2 bg-indigo-900 text-white rounded-lg hover:bg-indigo-700 transition"
+                                    onclick="adicionarComentario(${post.id}, this)">
+                                Enviar Comentário
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Container para os comentários -->
+                    <div class="comments-container mb-4">
+                        <div class="flex justify-center items-center py-4">
+                            <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-indigo-900"></div>
+                            <span class="ml-2 text-gray-600">Carregando comentários...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Botão para carregar mais comentários -->
+                    <div class="text-center">
+                        <button class="load-more-comments px-4 py-2 text-indigo-900 rounded-lg hover:bg-gray-100 transition"
+                                onclick="carregarMaisComentarios(${post.id})">
+                            Carregar mais comentários
+                        </button>
+                        <div class="no-more-comments text-gray-500 mt-2" style="display: none;">
+                            Não há mais comentários para carregar.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        feather.replace();
+
+    } catch (error) {
+        console.error('Erro ao carregar posts:', error);
+        postsList.innerHTML = `
+            <div class="text-center py-8 text-red-600">
+                <i data-feather="alert-triangle" class="w-16 h-16 mx-auto mb-4"></i>
+                <p>Erro ao carregar posts. Tente recarregar a página.</p>
+                <button onclick="carregarPosts()" class="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    Tentar Novamente
+                </button>
+            </div>
+        `;
+        feather.replace();
+    }
+}
 
         // ✅ FUNÇÕES AUXILIARES
         function formatarData(dataString) {
