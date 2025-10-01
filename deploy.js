@@ -21,7 +21,7 @@ app.use(session({
 
 app.use(cors());
 app.use(express.json({limit: '10mb'}));
-app.use(express.urlencoded({ extended: true })); // Adicione esta linha
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 const cone = mysql.createConnection({
@@ -98,18 +98,21 @@ app.post('/api/posts', async (req, res) => {
 });
 
 // ✅ ROTA PARA LISTAR POSTS COM INFO DE CURTIDAS
+// ✅ ROTA PARA LISTAR POSTS COM INFO DE CURTIDAS E COMENTÁRIOS
 app.get('/api/posts', (req, res) => {
     const usuarioId = req.session.usuarioId || null;
     
     const query = `
         SELECT p.*, 
-               COUNT(c.id) as curtidas_count,
+               COUNT(DISTINCT c.id) as curtidas_count,
+               COUNT(DISTINCT com.id) as comentarios_count,
                EXISTS(
                    SELECT 1 FROM curtidas c2 
                    WHERE c2.post_id = p.id AND c2.usuario_id = ?
                ) as usuario_curtiu
         FROM posts p
         LEFT JOIN curtidas c ON p.id = c.post_id
+        LEFT JOIN comentarios com ON p.id = com.post_id
         GROUP BY p.id
         ORDER BY p.data_criacao DESC
     `;
@@ -267,11 +270,127 @@ app.post('/api/logout', (req, res) => {
     });
 });
 
+// ✅ ROTA PARA ADICIONAR COMENTÁRIOS - VERSÃO CORRIGIDA
+app.post('/api/posts/:postId/comentarios', async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const { conteudo } = req.body;
+        const usuarioId = req.session.usuarioId;
+
+        console.log('📥 Recebendo comentário:', { postId, usuarioId, conteudo });
+
+        if (!usuarioId) {
+            return res.status(401).json({
+                success: false,
+                error: "Usuário não autenticado"
+            });
+        }
+
+        if (!conteudo || conteudo.trim() === '') {
+            return res.status(400).json({ 
+                success: false,
+                error: 'Conteúdo do comentário é obrigatório' 
+            });
+        }
+
+        // Usar promise wrapper
+        const promiseConnection = cone.promise();
+
+        // Verificar se o post existe
+        const [post] = await promiseConnection.execute(
+            'SELECT id FROM posts WHERE id = ?',
+            [postId]
+        );
+
+        if (post.length === 0) {
+            return res.status(404).json({ 
+                success: false,
+                error: 'Post não encontrado' 
+            });
+        }
+
+        // Buscar nome do usuário
+        const [usuario] = await promiseConnection.execute(
+            'SELECT nome FROM Usuarios WHERE id = ?',
+            [usuarioId]
+        );
+
+        if (usuario.length === 0) {
+            return res.status(404).json({ 
+                success: false,
+                error: 'Usuário não encontrado' 
+            });
+        }
+
+        // CORREÇÃO: Usar 'comentario' em vez de 'conteudo' e não incluir 'autor'
+        const [result] = await promiseConnection.execute(
+            `INSERT INTO comentarios (post_id, usuario_id, comentario, data_criacao) 
+             VALUES (?, ?, ?, NOW())`,
+            [postId, usuarioId, conteudo.trim()]
+        );
+
+        console.log('✅ Comentário adicionado com sucesso');
+
+        res.status(201).json({
+            success: true,
+            message: 'Comentário adicionado com sucesso',
+            comentarioId: result.insertId,
+            autor: usuario[0].nome, // Retornar o nome do usuário da tabela Usuarios
+            data_criacao: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error("❌ Erro ao adicionar comentário:", error);
+        res.status(500).json({ 
+            success: false,
+            error: 'Erro interno do servidor: ' + error.message
+        });
+    }
+});
+
+// ✅ ROTA PARA BUSCAR COMENTÁRIOS - VERSÃO CORRIGIDA
+app.get('/api/posts/:postId/comentarios', async (req, res) => {
+    try {
+        const { postId } = req.params;
+
+        console.log('🔍 Buscando comentários para o post:', postId);
+
+        // Usar promise wrapper
+        const promiseConnection = cone.promise();
+
+        // CORREÇÃO: Usar JOIN para buscar o nome do usuário e 'comentario' em vez de 'conteudo'
+        const [comentarios] = await promiseConnection.execute(
+            `SELECT 
+                c.id,
+                c.comentario as conteudo,  -- CORREÇÃO: usar alias para manter compatibilidade com frontend
+                c.data_criacao,
+                c.usuario_id,
+                u.nome as autor            -- Buscar nome da tabela Usuarios
+                FROM comentarios c
+                INNER JOIN Usuarios u ON c.usuario_id = u.id
+                WHERE c.post_id = ?
+                ORDER BY c.data_criacao DESC`,
+            [postId]
+        );
+
+        console.log(`✅ Encontrados ${comentarios.length} comentários para o post ${postId}`);
+
+        res.json(comentarios);
+
+    } catch (error) {
+        console.error('❌ Erro ao buscar comentários:', error);
+        res.status(500).json({ 
+            success: false,
+            error: 'Erro interno do servidor: ' + error.message
+        });
+    }
+});
+
+
 app.post('/api/register', async (req, res) => {
     try {
         console.log('📥 Dados recebidos no cadastro:', req.body);
         
-        // CORREÇÃO: Mudar de "name" para "nome" para bater com o front-end
         const { nome, senha, email } = req.body;
 
         // Validação dos dados
@@ -346,7 +465,6 @@ function inserirUsuario(nome, email, senha) {
 
 function verificarUsuario(email, senha) {
     return new Promise((resolve, reject) => {
-        // CORRIGINDO: mudando de "tes" para "usuarios"
         cone.execute("SELECT * FROM Usuarios WHERE email = ? AND senha = ?",
             [email, senha], (err, results) => {
                 if (err) {
